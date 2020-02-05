@@ -1,2 +1,2 @@
 # dep-api
-Digital Enhanced Living service apis
+Digital Enhanced Living service management APIs
