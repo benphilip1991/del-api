@@ -1,0 +1,32 @@
+{
+  "name": "del-api",
+  "version": "1.0.0",
+  "description": "Digital Enhanced Living service API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benphilip1991/del-api.git"
+  },
+  "keywords": [
+    "del-api"
+  ],
+  "author": "Ben Philip",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/benphilip1991/del-api/issues"
+  },
+  "homepage": "https://github.com/benphilip1991/del-api#readme",
+  "dependencies": {
+    "async": "^3.1.1",
+    "bcrypt": "^3.0.8",
+    "hapi": "^18.1.0",
+    "hapi-swagger": "^12.1.0",
+    "joi": "^14.3.1",
+    "moment": "^2.24.0",
+    "mongoose": "^5.8.11",
+    "swagger": "^0.7.5"
+  }
+}
