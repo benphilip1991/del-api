@@ -5,5 +5,6 @@
  */
 
  module.exports = {
-     CONSTANTS: require('./constants.js')
+     CONSTANTS: require('./constants.js'),
+     DBCONFIG: require('./dbConfig')
  }

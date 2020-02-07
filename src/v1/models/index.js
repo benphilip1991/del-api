@@ -7,7 +7,7 @@
 'use strict';
 
 const userModel = require('./userModel');
-const userServicesModel = require('./userServices');
+const userServicesModel = require('./userServicesModel');
 const serviceModel = require('./serviceModel');
 
 const model = {

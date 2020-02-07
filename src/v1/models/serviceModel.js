@@ -24,6 +24,6 @@ const serviceSchema = new Schema({
 });
 
 // Compile schema
-const serviceModel = new Schema('SERVICE', serviceSchema, 'services');
+const serviceModel = Mongoose.model('SERVICE', serviceSchema, 'services');
 
 module.exports = serviceModel;

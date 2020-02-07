@@ -9,7 +9,6 @@
 const Hapi = require('hapi');
 const Routes = require('./src/v1/routes');
 var config = require('./src/v1/config');
-//var routes = require('./src/v1/routes');
 
 // Create server instance
 const serverInit = async () => {
