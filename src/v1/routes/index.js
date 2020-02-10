@@ -6,6 +6,7 @@
  'use strict';
 
  const userRoutes = require('./userRoutes');
+ const authRoutes = require('./authRoutes');
 
  var apiRoutes = [].concat(userRoutes);
 

@@ -20,11 +20,12 @@ const Constants = require('../config/constants');
  */
 const registerUser = (payload, callback) => {
     var createdUser = {};
+    let query = {
+        emailId: payload.emailId,
+    };
+    var userExists = false;
     const seriesTasks = {
         task1_checkUserExists: (asyncCallback) => {
-            let query = {
-                emailId: payload.emailId,
-            };
             let projection = {
                 __v: 0,
                 password: 0
@@ -37,11 +38,18 @@ const registerUser = (payload, callback) => {
 
                     //data.hasOwnProperty("_id") not working
                     if (null !== data && data._id) {
-                        let conflictBody = {
-                            statusCode: Constants.HTTP_STATUS.CLIENT_ERROR.CONFLICT.statusCode,
-                            message: `User ${payload.emailId} already exists.`
+
+                        // if the user exists and is active, return a conflict
+                        if (!data.deleteFlag) {
+                            let conflictBody = {
+                                statusCode: Constants.HTTP_STATUS.CLIENT_ERROR.CONFLICT.statusCode,
+                                message: `User ${payload.emailId} already exists.`
+                            }
+                            asyncCallback(conflictBody);
+                        } else {
+                            userExists = true;
+                            asyncCallback();
                         }
-                        asyncCallback(conflictBody);
                     } else {
                         // User doesn't exist; create using task2
                         asyncCallback();
@@ -58,20 +66,40 @@ const registerUser = (payload, callback) => {
             payload.creationDate = Moment().utc().valueOf();
             payload.userRole = Constants.USER_ROLES.PATIENT;
 
-            // Mongoose returns created object in the data parameter
-            Services.userServices.createNewUser(payload, (err, data) => {
-                if (err) {
-                    asyncCallback(err);
-                } else {
-                    createdUser = {
-                        _id: data._id,
-                        firstName: data.firstName,
-                        lastName: data.lastName,
-                        emailId: data.emailId
+            if (!userExists) {
+                // Mongoose returns created object in the data parameter
+                Services.userServices.createNewUser(payload, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
+                    } else {
+                        createdUser = {
+                            _id: data._id,
+                            firstName: data.firstName,
+                            lastName: data.lastName,
+                            emailId: data.emailId
+                        }
+
+                        asyncCallback();
                     }
-                    asyncCallback();
-                }
-            })
+                });
+            } else {
+                // Update user and restore account
+                console.log(`${Moment()} User exists. Restoring account and updating details.`)
+                Services.userServices.updateSingleUser(query, payload, { upsert: false }, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
+                    } else {
+                        createdUser = {
+                            _id: data._id,
+                            firstName: data.firstName,
+                            lastName: data.lastName,
+                            emailId: data.emailId
+                        }
+
+                        asyncCallback();
+                    }
+                })
+            }
         }
     }
 
@@ -107,19 +135,20 @@ const deleteSingleUser = (userId, callback) => {
             };
 
             Services.userServices.getSingleUser(query, projection, {}, (err, data) => {
-                if(err) {
+                if (err) {
                     asyncCallback(err);
                 } else {
                     // Not found
-                    if(null == data) {
+                    if (null == data) {
                         let notFoundBody = {
                             statusCode: Constants.HTTP_STATUS.CLIENT_ERROR.NOT_FOUND.statusCode,
                             message: `User ${userId} does not exist`
                         }
                         asyncCallback(notFoundBody);
+                    } else {
+                        // User found
+                        asyncCallback();
                     }
-                    // User found
-                    asyncCallback();
                 }
             });
         },
@@ -127,11 +156,11 @@ const deleteSingleUser = (userId, callback) => {
             let updateData = {
                 deleteFlag: true
             }
-            Services.userServices.updateSingleUser(query, updateData, {upsert: false}, (err, data) => {
-                if(err) {
+            Services.userServices.updateSingleUser(query, updateData, { upsert: false }, (err, data) => {
+                if (err) {
                     asyncCallback(err)
                 } else {
-                    deletedUser._id = userId;
+                    deletedUser._id = data._id;
                     asyncCallback();
                 }
             })
@@ -139,7 +168,7 @@ const deleteSingleUser = (userId, callback) => {
     }
 
     async.series(seriesTasks, (err) => {
-        if(err) {
+        if (err) {
             callback(err);
         } else {
             callback(null, deletedUser)
@@ -223,7 +252,7 @@ const getAllUsers = (callback) => {
 
     // Fetch all users
     async.series(seriesTasks, (err) => {
-        if(err) {
+        if (err) {
             callback(err);
         } else {
             callback(null, userList);

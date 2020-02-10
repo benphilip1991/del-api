@@ -14,6 +14,7 @@ const Schema = Mongoose.Schema;
 /**
  * User schema definition; 
  * Users can be patients or caregivers
+ * TODO: Add deletable flag to make permanent admins
  */
 const userSchema = new Schema({
     emailId: String,

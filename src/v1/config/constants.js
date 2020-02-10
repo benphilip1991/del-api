@@ -13,6 +13,16 @@ const SERVER = {
 }
 
 /**
+ * Swagger options
+ */
+const SWAGGER_OPTIONS = {
+    info: {
+        'title': 'DEL API Documentation',
+        'version': '0.0.1'
+    }
+}
+
+/**
  * Status codes and default messages
  */
 const HTTP_STATUS = {
@@ -67,6 +77,7 @@ const USER_ROLES = {
 
 const CONSTANTS = {
     SERVER: SERVER,
+    SWAGGER_OPTIONS: SWAGGER_OPTIONS,
     HTTP_STATUS: HTTP_STATUS,
     USER_ROLES: USER_ROLES
 }

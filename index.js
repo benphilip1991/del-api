@@ -7,8 +7,11 @@
 'use strict'
 
 const Hapi = require('hapi');
+const HapiSwagger = require('hapi-swagger');
+const Inert = require('inert');
+const Vision = require('vision');
 const Routes = require('./src/v1/routes');
-var config = require('./src/v1/config');
+const config = require('./src/v1/config');
 
 // Create server instance
 const serverInit = async () => {
@@ -20,11 +23,23 @@ const serverInit = async () => {
         host: 'localhost'
     });
 
+    // Register plugins
+    await server.register([
+        Inert,
+        Vision,
+        {
+            'plugin': HapiSwagger,
+            'options': config.CONSTANTS.SWAGGER_OPTIONS
+        }]
+    );
+
     // Default route
     server.route({
         method: 'GET',
         path: '/',
         handler: (request, h) => {
+
+            // Redirect request to swagger
             return 'DEL API';
         }
     });
@@ -35,15 +50,15 @@ const serverInit = async () => {
     // Logs registered with server will emit the event 'log'
     // and those with request will emit 'request
     server.events.on('log', (event, tags) => {
-        if(tags.info) {
+        if (tags.info) {
             console.log(event);
         }
     });
 
     server.events.on('request', (event, tags) => {
-        if(tags.error) {
+        if (tags.error) {
             console.log(event.info.message);
-        }        
+        }
     });
 
     await server.start(() => {
