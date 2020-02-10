@@ -6,10 +6,11 @@
 
 'use strict'
 
-const Hapi = require('hapi');
+const Hapi = require('@hapi/hapi');
 const HapiSwagger = require('hapi-swagger');
-const Inert = require('inert');
-const Vision = require('vision');
+const Inert = require('@hapi/inert');
+const Vision = require('@hapi/vision');
+const Joi = require('@hapi/joi');
 const Routes = require('./src/v1/routes');
 const config = require('./src/v1/config');
 
@@ -44,6 +45,8 @@ const serverInit = async () => {
         }
     });
 
+    server.validator(Joi);
+    
     // Register routes in ./src/v1/routes
     server.route(Routes);
 

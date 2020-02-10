@@ -5,7 +5,7 @@
  */
 'use strict';
 
-const Joi = require('joi');
+const Joi = require('@hapi/joi');
 const Moment = require('moment');
 const Mongoose = require('mongoose');
 const Controller = require('../controller');
