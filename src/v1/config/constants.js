@@ -56,9 +56,19 @@ const HTTP_STATUS = {
     }
 }
 
+/**
+ * User roles
+ */
+const USER_ROLES = {
+    ADMIN: "admin",
+    PATIENT: "patient",
+    CAREGIVER: "caregiver"
+}
+
 const CONSTANTS = {
     SERVER: SERVER,
-    HTTP_STATUS: HTTP_STATUS
+    HTTP_STATUS: HTTP_STATUS,
+    USER_ROLES: USER_ROLES
 }
 
 module.exports = CONSTANTS;

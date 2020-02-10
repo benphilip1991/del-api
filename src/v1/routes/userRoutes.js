@@ -37,9 +37,12 @@ const getUser = {
         if (!Mongoose.Types.ObjectId.isValid(request.params.userId)) {
             console.log('[INFO]', `${Moment()} --> Invalid UserId`)
 
-            var errorResponse = h.response(utils.buildErrorResponse(
-                Constants.HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST));
-            errorResponse.code(Constants.HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST.statusCode);
+            var statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST.statusCode;
+            var response = {
+                message: "Invalid user ID"
+            }
+            var errorResponse = h.response(response);
+            errorResponse.code(statusCode);
             errorResponse.header('Content-Type', 'application/json');
             return errorResponse;
         }
@@ -50,15 +53,16 @@ const getUser = {
             // Response callback
             const responseCallback = (error, data) => {
                 if (error) {
-                    console.log("Error in Getting specific user")
+                    console.log(`${Moment()} Error in Getting specific user`);
+                    var statusCode = Constants.HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR.statusCode;
                     reject(
                         h.response(
-                            utils.buildErrorResponse(error)
-                        ).code(Constants.HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR.statusCode).header('Content-Type', 'application/json')
+                            utils.buildErrorResponse(error)).
+                            code(statusCode).header('Content-Type', 'application/json')
                     );
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
-                    if(!data._id) {
+                    if (!data._id) {
                         statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.NOT_FOUND.statusCode;
                     }
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
@@ -80,10 +84,29 @@ const getAllUsers = {
 
         console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
 
-        var response = h.response("getAllUsers");
-        response.code(Constants.HTTP_STATUS.SUCCESS.OK.statusCode);
-        response.header('Content-Type', 'application/json');
-        return response;
+        return new Promise((resolve, reject) => {
+
+            // Response callback
+            const responseCallback = (error, data) => {
+                if(error) {
+                    console.log(`${Moment()} Error getting users`);
+                    var statusCode = Constants.HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR.statusCode;
+                    reject(
+                        h.response(utils.buildErrorResponse(error)).
+                            code(statusCode).header('Content-Type', 'application/json')
+                    );
+                } else {
+                    var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
+                    
+                    // Empty user list
+                    if(!data.users) {
+                        statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.NOT_FOUND.statusCode;
+                    }
+                    resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
+                }
+            }
+            Controller.UserController.getAllUsers(responseCallback);
+        });
     }
 }
 
@@ -105,7 +128,8 @@ const registerUser = {
                 age: Joi.number().required(),
                 sex: Joi.string().required().regex(/^[a-zA-Z ]+$/).max(6),
                 password: Joi.string().required().min(6),
-                creationDate: Joi.any().forbidden()
+                creationDate: Joi.any().forbidden(),
+                deleteFlag: Joi.any().forbidden()
             }
         }
     },
@@ -128,11 +152,11 @@ const registerUser = {
                         );
                     }
                 } else {
-
                     // Created successfully
+                    var statusCode = Constants.HTTP_STATUS.SUCCESS.CREATED.statusCode
                     resolve(
                         h.response(data).
-                            code(Constants.HTTP_STATUS.SUCCESS.CREATED.statusCode).header('Content-Type', 'application/json')
+                            code(statusCode).header('Content-Type', 'application/json')
                     );
                 }
             }
@@ -142,10 +166,76 @@ const registerUser = {
     }
 }
 
+/**
+ * Delete user API - this API only soft-deletes a user
+ * and doesn't remove user records.
+ */
+const deleteSingleUser = {
+    method: 'DELETE',
+    path: '/api/v1/user/{userId}',
+    config: {
+        validate: {
+            params: {
+                userId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
+            }
+        }
+    },
+    handler: (request, h) => {
+
+        console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
+
+        // Verify if userId is an objectId, else reject
+        if (!Mongoose.Types.ObjectId.isValid(request.params.userId)) {
+            console.log('[INFO]', `${Moment()} --> Invalid UserId`)
+
+            var statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST.statusCode;
+            var response = {
+                message: "Invalid user ID"
+            }
+            var errorResponse = h.response(response);
+            errorResponse.code(statusCode);
+            errorResponse.header('Content-Type', 'application/json');
+            return errorResponse;
+        }
+
+        // Delete user and return status
+        return new Promise((resolve, reject) => {
+
+            // Response callback
+            const responseCallback = (error, data) => {
+                if(error) {
+                    // If a custom error is sent, resolve it
+                    if (error.statusCode) {
+                        resolve(h.response(
+                            utils.buildErrorResponse(error)
+                        ).code(error.statusCode).header('Content-Type', 'application/json'));
+                    } else {
+                        reject(
+                            h.response(
+                                utils.buildErrorResponse(error)
+                            ).code(error.statusCode).header('Content-Type', 'application/json')
+                        );
+                    }
+                } else {
+                    var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
+                    if(!data._id) {
+                        statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.NOT_FOUND.statusCode;
+                    }
+                    resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
+                }
+            }
+
+            Controller.UserController.deleteSingleUser(request.params.userId, responseCallback);
+        });
+    }
+}
+
+
 const UserRoutes = [
     getUser,
     getAllUsers,
-    registerUser
+    registerUser,
+    deleteSingleUser
 ];
 
 module.exports = UserRoutes;

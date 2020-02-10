@@ -30,6 +30,8 @@ const getSingleUser = (query, projection, options, callback) => {
  */
 const getAllUsers = (query, projection, options, callback) => {
 
+    console.log(`Getting all users with query : ${JSON.stringify(query)}`);
+    Models.userModel.find(query, projection, options, callback);
 }
 
 /**
@@ -39,8 +41,10 @@ const getAllUsers = (query, projection, options, callback) => {
  * @param {*} options 
  * @param {*} callback 
  */
-const updateSingleUser = (query, projection, options, callback) => {
+const updateSingleUser = (query, updateData, options, callback) => {
 
+    console.log(`Updating user with query : ${JSON.stringify(query)}`);
+    Models.userModel.findOneAndUpdate(query, updateData, options, callback);
 }
 
 /**

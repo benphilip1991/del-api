@@ -16,7 +16,6 @@ const Schema = Mongoose.Schema;
  * Users can be patients or caregivers
  */
 const userSchema = new Schema({
-    userId: String,
     emailId: String,
     password: String,
     firstName: String,
