@@ -41,12 +41,12 @@ const serverInit = async () => {
         handler: (request, h) => {
 
             // Redirect request to swagger
-            return 'DEL API';
+            return h.redirect('/docs');
         }
     });
 
     server.validator(Joi);
-    
+
     // Register routes in ./src/v1/routes
     server.route(Routes);
 

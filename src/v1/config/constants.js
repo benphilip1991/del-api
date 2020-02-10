@@ -19,7 +19,9 @@ const SWAGGER_OPTIONS = {
     info: {
         'title': 'DEL API Documentation',
         'version': '0.0.1'
-    }
+    },
+    documentationPath: '/docs',
+    grouping: 'tags'
 }
 
 /**

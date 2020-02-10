@@ -23,8 +23,8 @@ const getUser = {
     method: 'GET',
     path: '/api/v1/user/{userId}',
     config: {
-        description: 'Get single user API',
-        tags: ['api'],
+        description: 'Get single user details',
+        tags: ['api', 'user'],
         validate: {
             params: {
                 userId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
@@ -83,8 +83,8 @@ const getAllUsers = {
     method: 'GET',
     path: '/api/v1/user',
     config: {
-        description: 'Get all users API',
-        tags: ['api', 'getAllUsers']
+        description: 'Get all user records',
+        tags: ['api', 'user']
     },
     handler: (request, h) => {
 
@@ -124,8 +124,8 @@ const registerUser = {
     method: 'POST',
     path: '/api/v1/user',
     config: {
-        description: "DEL user registration API",
-        tags: ["api", "userCreate"],
+        description: "Register new user",
+        tags: ['api', 'user'],
         validate: {
             payload: {
                 firstName: Joi.string().required().trim().regex(/^[a-zA-Z ]+$/),
@@ -181,7 +181,7 @@ const deleteSingleUser = {
     path: '/api/v1/user/{userId}',
     config: {
         description: 'Delete existing user - soft deletion of user record',
-        tags: ['api', 'deleteUser'],
+        tags: ['api', 'user'],
         validate: {
             params: {
                 userId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
