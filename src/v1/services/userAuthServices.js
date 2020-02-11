@@ -17,6 +17,8 @@ const Models = require('../models');
  */
 const getUserToken = (query, projection, options, callback) => {
 
+    console.log(`Getting user token with query : ${JSON.stringify(query)}`);
+    Models.userAuthModel.findOne(query, projection, options, callback);
 }
 
 /**
@@ -37,6 +39,8 @@ const updateUserToken = (query, updateData, options, callback) => {
  */
 const deleteUserToken = (query, callback) => {
 
+    console.log(`Removing tokens for user ${query.userId}`);
+    Models.userAuthModel.remove(query, callback);
 }
 
 /**
@@ -45,7 +49,9 @@ const deleteUserToken = (query, callback) => {
  * @param {*} callback 
  */
 const setUserToken = (userTokenMap, callback) => {
-
+    
+    let userTokenObj = new Models.userAuthModel(userTokenMap);
+    userTokenObj.save(callback);
 }
 
 module.exports = {

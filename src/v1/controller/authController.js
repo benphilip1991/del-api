@@ -21,53 +21,75 @@ const Constants = require('../config/constants');
  */
 const generateToken = (payload, callback) => {
     var token = {};
+    var foundOldToken = false;
     let query = {
         emailId: payload.emailId
     }
     let userId = '';
     const seriesTasks = {
         task1_checkUserExists: (asyncCallback) => {
+            let unauthorizedBody = {
+                statusCode: Constants.HTTP_STATUS.CLIENT_ERROR.UNAUTHORIZED.statusCode,
+                message: "Invalid EmailId or Password"
+            }
+
             Services.userServices.getSingleUser(query, {}, {}, (err, data) => {
-                if(err) {
+                if (err) {
                     asyncCallback(err);
                 } else {
-                    if(null != data && data._id) {
+                    if (null != data && data._id) {
                         // User exists; validate password
-                        if(Utils.DelUtils.verifyPassword(payload.password, data.password)) {
+                        if (Utils.DelUtils.verifyPassword(payload.password, data.password)) {
                             // Validated
                             console.log(`${Moment()} Password validated`);
                             userId = data._id;
                             asyncCallback();
                         } else {
-                            let unauthorizedBody = {
-                                statusCode: Constants.HTTP_STATUS.CLIENT_ERROR.UNAUTHORIZED.statusCode,
-                                message: Constants.HTTP_STATUS.CLIENT_ERROR.UNAUTHORIZED.defaultMessage
-                            }
-
                             asyncCallback(unauthorizedBody);
                         }
+                    } else {
+                        asyncCallback(unauthorizedBody);
                     }
                 }
             });
         },
-        task2_generateToken: (asyncCallback) => {
-            
-            console.log(`${Moment()} Generating token for user ${userId}`)
-             // Using userId for token generation
-            token = {
-                bearer: Utils.AuthUtils.generateToken(userId)
+        task2_clearPreviousToken: (asyncCallback) => {
+            let tokenQuery = {
+                userId: userId
             }
+            Services.userAuthServices.deleteUserToken(tokenQuery, (err, data) => {
+                if (err) {
+                    asyncCallback(err);
+                } else {
+                    // if token exists, data.deletedCount = 1; else 0
+                    asyncCallback();
+                }
+            });
+        },
+        task3_generateToken: (asyncCallback) => {
+            console.log(`${Moment()} Generating token for user ${userId}`)
+            // Using userId for token generation
+            token.bearer = Utils.AuthUtils.generateToken(userId);
             asyncCallback();
         },
-        task3_storeToken: (asyncCallback) => {
-
-            console.log(`Validating : ${JSON.stringify(Utils.AuthUtils.verifyToken(token.bearer))}`);
-            asyncCallback();
+        task4_storeToken: (asyncCallback) => {
+            // AuthModel takes userId, token
+            let userTokenMap = {
+                userId: userId,
+                token: token.bearer
+            }
+            Services.userAuthServices.setUserToken(userTokenMap, (err, data) => {
+                if (err) {
+                    asyncCallback(err)
+                } else {
+                    asyncCallback(null, token);
+                }
+            });
         }
     }
 
     async.series(seriesTasks, (err) => {
-        if(err) {
+        if (err) {
             callback(err);
         } else {
             callback(null, token)

@@ -7,6 +7,7 @@
 'use strict';
 
 const Joi = require('@hapi/joi');
+const Boom = require('@hapi/boom');
 const Moment = require('moment');
 const Controller = require('../controller');
 const Constants = require('../config/constants');
