@@ -22,6 +22,10 @@ const JWT_SECRETS = {
     JWT_DEFAULT_EXPIRY: process.env.JWT_DEFAULT_EXPIRY
 }
 
+const AUTH_CONFIG = {
+    AUTH_STRATEGY: process.env.AUTH_STRATEGY || 'jwt_auth'
+}
+
 /**
  * Swagger options
  */
@@ -90,6 +94,7 @@ const USER_ROLES = {
 const CONSTANTS = {
     SERVER: SERVER,
     JWT_SECRETS: JWT_SECRETS,
+    AUTH_CONFIG: AUTH_CONFIG,
     SWAGGER_OPTIONS: SWAGGER_OPTIONS,
     HTTP_STATUS: HTTP_STATUS,
     USER_ROLES: USER_ROLES

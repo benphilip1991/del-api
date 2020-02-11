@@ -11,8 +11,10 @@ const HapiSwagger = require('hapi-swagger');
 const Inert = require('@hapi/inert');
 const Vision = require('@hapi/vision');
 const Joi = require('@hapi/joi');
+const AuthToken = require('hapi-auth-bearer-token');
 const Routes = require('./src/v1/routes');
 const config = require('./src/v1/config');
+const AuthUtils = require('./src/v1/utils/authUtils');
 
 // Create server instance
 const serverInit = async () => {
@@ -26,6 +28,7 @@ const serverInit = async () => {
 
     // Register plugins
     await server.register([
+        AuthToken,
         Inert,
         Vision,
         {
@@ -33,6 +36,23 @@ const serverInit = async () => {
             'options': config.CONSTANTS.SWAGGER_OPTIONS
         }]
     );
+
+    // Registering auth strategy
+    server.auth.strategy(config.CONSTANTS.AUTH_CONFIG.AUTH_STRATEGY, 'bearer-access-token', {
+        allowMultipleHeaders: false,
+        tokenType: 'Bearer',
+        validate: (request, token, h) => {
+            let isValid = false;
+            let credentials = AuthUtils.verifyToken(token);
+            if (credentials && credentials.userId) {
+                isValid = true;
+            }
+            return { isValid, credentials };
+        }
+    });
+
+    // Register validator
+    server.validator(Joi);
 
     // Default route
     server.route({
@@ -45,25 +65,8 @@ const serverInit = async () => {
         }
     });
 
-    // Register validator
-    server.validator(Joi);
-
     // Register routes in ./src/v1/routes
     server.route(Routes);
-
-    // Logs registered with server will emit the event 'log'
-    // and those with request will emit 'request
-    server.events.on('log', (event, tags) => {
-        if (tags.info) {
-            console.log(event);
-        }
-    });
-
-    server.events.on('request', (event, tags) => {
-        if (tags.error) {
-            console.log(event.info.message);
-        }
-    });
 
     console.log(`Starting DEL service on : ${server.info.uri}`);
     await server.start(() => {

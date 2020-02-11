@@ -109,7 +109,8 @@ const registerUser = (payload, callback) => {
 /**
  * Delete single - updates the deleteFlag
  * for the user to true. Users are not permanently
- * deleted from the system
+ * deleted from the system.
+ * Only deletable users are effected
  * 
  * @param {*} userId 
  * @param {*} callback 
@@ -134,6 +135,9 @@ const deleteSingleUser = (userId, callback) => {
                     // Not found
                     if (null == data) {
                         asyncCallback(Boom.notFound(`User ${userId} does not exist`));
+                    } else if(!data.deleteFlag) {
+                        // non deletable user
+                        asyncCallback(Boom.forbidden(`User ${userId} cannot be deleted`));
                     } else {
                         // User found
                         asyncCallback();

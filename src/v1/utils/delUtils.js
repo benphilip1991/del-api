@@ -40,14 +40,14 @@ const verifyPassword = (pPassword, ePassword) => {
 const buildErrorResponse = (data) => {
 
     // Default or provided error data
-    if(typeof data == 'object') {
-        if(data.hasOwnProperty('statusCode') && data.hasOwnProperty('message')) {
+    if (typeof data == 'object') {
+        if (data.hasOwnProperty('statusCode') && data.hasOwnProperty('message')) {
             return data;
         }
     } else {
         console.log("Default error")
         return {
-            statusCode: Constants.HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR.statusCode, 
+            statusCode: Constants.HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR.statusCode,
             message: Constants.HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR.defaultMessage
         }
     }
@@ -70,11 +70,11 @@ const buildUnauthorizedResponse = (data) => {
 const buildSuccessResponse = (message, data) => {
 
     let responseMessage = message || Constants.HTTP_STATUS.SUCCESS.OK.defaultMessage;
-    if(typeof responseMessage == 'object') {
+    if (typeof responseMessage == 'object') {
 
     } else {
         return {
-            
+
         };
     }
 }

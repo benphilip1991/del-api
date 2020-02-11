@@ -25,7 +25,8 @@ const userSchema = new Schema({
     sex: { type: String, required: true },
     userRole: { type: String, required: true },
     creationDate: { type: Date, required: true },
-    deleteFlag: { type: Boolean, required: true }
+    deleteFlag: { type: Boolean, required: true },
+    deletable: { type: Boolean, required: true }
 });
 
 // Compile schema

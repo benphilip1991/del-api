@@ -23,6 +23,7 @@ const getUser = {
     method: 'GET',
     path: '/api/v1/user/{userId}',
     config: {
+        auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
         description: 'Get single user details',
         tags: ['api', 'user'],
         validate: {
@@ -83,6 +84,7 @@ const getAllUsers = {
     method: 'GET',
     path: '/api/v1/user',
     config: {
+        auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
         description: 'Get all user records',
         tags: ['api', 'user']
     },
@@ -124,6 +126,7 @@ const registerUser = {
     method: 'POST',
     path: '/api/v1/user',
     config: {
+        auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
         description: "Register new user",
         tags: ['api', 'user'],
         validate: {
@@ -169,6 +172,7 @@ const deleteSingleUser = {
     method: 'DELETE',
     path: '/api/v1/user/{userId}',
     config: {
+        auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
         description: 'Delete existing user - soft deletion of user record',
         tags: ['api', 'user'],
         validate: {
