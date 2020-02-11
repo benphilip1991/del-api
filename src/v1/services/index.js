@@ -5,5 +5,6 @@
  */
 
 module.exports = {
-    userServices: require('./userServices')
+    userServices: require('./userServices'),
+    userAuthServices: require('./userAuthServices')
 }

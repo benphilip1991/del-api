@@ -130,10 +130,10 @@ const registerUser = {
             payload: {
                 firstName: Joi.string().required().trim().regex(/^[a-zA-Z ]+$/),
                 lastName: Joi.string().required().trim().regex(/^[a-zA-Z ]+$/),
-                emailId: Joi.string().required().trim(),
+                emailId: Joi.string().email().required().trim(),
                 age: Joi.number().required(),
                 sex: Joi.string().required().regex(/^[a-zA-Z ]+$/).max(6),
-                password: Joi.string().required().min(6),
+                password: Joi.string().required().trim().min(6),
                 creationDate: Joi.any().forbidden(),
                 deleteFlag: Joi.any().forbidden()
             }

@@ -15,10 +15,10 @@ const Schema = Mongoose.Schema;
  * linked services
  */
 const userServicesSchema = new Schema({
-    userId: String,
+    userId: { type: String, required: true },
     services: [{
-        serviceId: String,
-        assignedBy: String
+        serviceId: { type: String, required: true },
+        assignedBy: { type: String, required: true }
     }]
 });
 

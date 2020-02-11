@@ -4,12 +4,22 @@
  * @author Ben Philip
  */
 
+const Dotenv = require('dotenv');
+
+Dotenv.config();
 /**
  * Server details
  */
 const SERVER = {
     SERVICE_NAME: 'del-api',
-    PORT: 3000
+    PORT: process.env.PORT || 3000,
+    HOST: process.env.HOST || 'localhost'
+}
+
+const JWT_SECRETS = {
+    JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
+    JWT_ALGORITHM: process.env.JWT_ALGORITHM,
+    JWT_DEFAULT_EXPIRY: process.env.JWT_DEFAULT_EXPIRY
 }
 
 /**
@@ -79,6 +89,7 @@ const USER_ROLES = {
 
 const CONSTANTS = {
     SERVER: SERVER,
+    JWT_SECRETS: JWT_SECRETS,
     SWAGGER_OPTIONS: SWAGGER_OPTIONS,
     HTTP_STATUS: HTTP_STATUS,
     USER_ROLES: USER_ROLES

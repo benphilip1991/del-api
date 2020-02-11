@@ -21,7 +21,7 @@ const serverInit = async () => {
             name: config.CONSTANTS.SERVER.SERVICE_NAME
         },
         port: config.CONSTANTS.SERVER.PORT,
-        host: 'localhost'
+        host: config.CONSTANTS.SERVER.HOST
     });
 
     // Register plugins
@@ -45,6 +45,7 @@ const serverInit = async () => {
         }
     });
 
+    // Register validator
     server.validator(Joi);
 
     // Register routes in ./src/v1/routes
@@ -64,8 +65,9 @@ const serverInit = async () => {
         }
     });
 
+    console.log(`Starting DEL service on : ${server.info.uri}`);
     await server.start(() => {
-        console.log('info', `Started DEL service on : ${server.info.uri}:${config.CONSTANTS.SERVER.PORT}`);
+        console.log('info', `Started DEL service on : ${server.info.uri}`);
     });
 };
 

@@ -17,15 +17,15 @@ const Schema = Mongoose.Schema;
  * TODO: Add deletable flag to make permanent admins
  */
 const userSchema = new Schema({
-    emailId: String,
-    password: String,
-    firstName: String,
-    lastName: String,
-    age: Number,
-    sex: String,
-    userRole: String,
-    creationDate: Date,
-    deleteFlag: Boolean
+    emailId: { type: String, required: true, index: { unique: true } },
+    password: { type: String, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
+    age: { type: Number, required: true },
+    sex: { type: String, required: true },
+    userRole: { type: String, required: true },
+    creationDate: { type: Date, required: true },
+    deleteFlag: { type: Boolean, required: true }
 });
 
 // Compile schema

@@ -5,7 +5,7 @@
  */
 'use strict';
 
-const Boom = require('boom');
+const Boom = require('@hapi/boom');
 const Moment = require('moment');
 const BCrypt = require('bcrypt');
 const Constants = require('../config/constants');
@@ -26,10 +26,10 @@ const encryptPassword = (plaintextPassword) => {
 
 /**
  * Compare encrypted and plain passwords
- * @param {*} pPassword 
- * @param {*} ePassword 
+ * @param {String} pPassword 
+ * @param {String} ePassword 
  */
-const comparePasswords = (pPassword, ePassword) => {
+const verifyPassword = (pPassword, ePassword) => {
     return (BCrypt.compareSync(pPassword, ePassword));
 }
 
@@ -55,6 +55,14 @@ const buildErrorResponse = (data) => {
 }
 
 /**
+ * Build error response for unauthorized requests
+ * @param {*} data 
+ */
+const buildUnauthorizedResponse = (data) => {
+
+}
+
+/**
  * Build success response message for good API outcomes
  * @param {*} message 
  * @param {*} data 
@@ -74,7 +82,8 @@ const buildSuccessResponse = (message, data) => {
 module.exports = {
     returnError: returnError,
     encryptPassword: encryptPassword,
-    comparePasswords: comparePasswords,
+    verifyPassword: verifyPassword,
     buildErrorResponse: buildErrorResponse,
+    buildUnauthorizedResponse: buildUnauthorizedResponse,
     buildSuccessResponse: buildSuccessResponse
 }

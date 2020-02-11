@@ -8,16 +8,16 @@ const Mongoose = require('mongoose');
 const Schema = Mongoose.Schema;
 
 const serviceSchema = new Schema({
-    serviceId: String,
-    developerId: String,
-    serviceDescription: String,
-    serviceUrl: String,
-    serviceIconUrl: String,
+    serviceId: { type: String, required: true },
+    developerId: { type: String, required: true },
+    serviceDescription: { type: String, required: true },
+    serviceUrl: { type: String, required: true },
+    serviceIconUrl: { type: String, required: true },
     dataDescription: {
         dataCollected: [
             {
-                dataType: String,
-                description: String
+                dataType: { type: String, required: true },
+                description: { type: String, required: true }
             }
         ]
     }
