@@ -35,19 +35,8 @@ const generateAuthToken = {
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
-                if(error) {
-                    // If a custom error is sent, resolve it
-                    if (error.statusCode) {
-                        resolve(h.response(
-                            utils.buildErrorResponse(error)
-                        ).code(error.statusCode).header('Content-Type', 'application/json'));
-                    } else {
-                        reject(
-                            h.response(
-                                utils.buildErrorResponse(error)
-                            ).code(error.statusCode).header('Content-Type', 'application/json')
-                        );
-                    }
+                if (error) {
+                    reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));

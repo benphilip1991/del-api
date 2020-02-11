@@ -22,17 +22,6 @@ const getUserToken = (query, projection, options, callback) => {
 }
 
 /**
- * Update user token 
- * @param {*} query 
- * @param {*} updateData 
- * @param {*} options 
- * @param {*} callback 
- */
-const updateUserToken = (query, updateData, options, callback) => {
-
-}
-
-/**
  * Remove auth tokens for given user
  * @param {*} query 
  * @param {*} callback 
@@ -40,7 +29,7 @@ const updateUserToken = (query, updateData, options, callback) => {
 const deleteUserToken = (query, callback) => {
 
     console.log(`Removing tokens for user ${query.userId}`);
-    Models.userAuthModel.remove(query, callback);
+    Models.userAuthModel.deleteOne(query, callback);
 }
 
 /**
@@ -56,7 +45,6 @@ const setUserToken = (userTokenMap, callback) => {
 
 module.exports = {
     getUserToken: getUserToken,
-    updateUserToken: updateUserToken,
     deleteUserToken: deleteUserToken,
     setUserToken: setUserToken
 }

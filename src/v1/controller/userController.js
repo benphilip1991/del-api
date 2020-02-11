@@ -6,6 +6,7 @@
 'use strict';
 
 const async = require('async');
+const Boom = require('@hapi/boom');
 const Moment = require('moment');
 const utils = require('../utils/delUtils');
 const Services = require('../services');
@@ -35,17 +36,11 @@ const registerUser = (payload, callback) => {
                 if (err) {
                     asyncCallback(err);
                 } else {
-
                     //data.hasOwnProperty("_id") not working
                     if (null !== data && data._id) {
-
                         // if the user exists and is active, return a conflict
                         if (!data.deleteFlag) {
-                            let conflictBody = {
-                                statusCode: Constants.HTTP_STATUS.CLIENT_ERROR.CONFLICT.statusCode,
-                                message: `User ${payload.emailId} already exists.`
-                            }
-                            asyncCallback(conflictBody);
+                            asyncCallback(Boom.conflict(`User ${payload.emailId} already exists.`));
                         } else {
                             userExists = true;
                             asyncCallback();
@@ -78,7 +73,6 @@ const registerUser = (payload, callback) => {
                             lastName: data.lastName,
                             emailId: data.emailId
                         }
-
                         asyncCallback();
                     }
                 });
@@ -95,7 +89,6 @@ const registerUser = (payload, callback) => {
                             lastName: data.lastName,
                             emailId: data.emailId
                         }
-
                         asyncCallback();
                     }
                 })
@@ -140,11 +133,7 @@ const deleteSingleUser = (userId, callback) => {
                 } else {
                     // Not found
                     if (null == data) {
-                        let notFoundBody = {
-                            statusCode: Constants.HTTP_STATUS.CLIENT_ERROR.NOT_FOUND.statusCode,
-                            message: `User ${userId} does not exist`
-                        }
-                        asyncCallback(notFoundBody);
+                        asyncCallback(Boom.notFound(`User ${userId} does not exist`));
                     } else {
                         // User found
                         asyncCallback();

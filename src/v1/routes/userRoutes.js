@@ -94,7 +94,7 @@ const getAllUsers = {
 
             // Response callback
             const responseCallback = (error, data) => {
-                if(error) {
+                if (error) {
                     console.log(`${Moment()} Error getting users`);
                     var statusCode = Constants.HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR.statusCode;
                     reject(
@@ -103,9 +103,9 @@ const getAllUsers = {
                     );
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
-                    
+
                     // Empty user list
-                    if(!data.users) {
+                    if (!data.users) {
                         statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.NOT_FOUND.statusCode;
                     }
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
@@ -145,18 +145,7 @@ const registerUser = {
         return new Promise((resolve, reject) => {
             const responseCallback = (error, data) => {
                 if (error) {
-                    // If a custom error is sent, resolve it
-                    if (error.statusCode) {
-                        resolve(h.response(
-                            utils.buildErrorResponse(error)
-                        ).code(error.statusCode).header('Content-Type', 'application/json'));
-                    } else {
-                        reject(
-                            h.response(
-                                utils.buildErrorResponse(error)
-                            ).code(error.statusCode).header('Content-Type', 'application/json')
-                        );
-                    }
+                    reject(error);
                 } else {
                     // Created successfully
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.CREATED.statusCode
@@ -211,22 +200,11 @@ const deleteSingleUser = {
 
             // Response callback
             const responseCallback = (error, data) => {
-                if(error) {
-                    // If a custom error is sent, resolve it
-                    if (error.statusCode) {
-                        resolve(h.response(
-                            utils.buildErrorResponse(error)
-                        ).code(error.statusCode).header('Content-Type', 'application/json'));
-                    } else {
-                        reject(
-                            h.response(
-                                utils.buildErrorResponse(error)
-                            ).code(error.statusCode).header('Content-Type', 'application/json')
-                        );
-                    }
+                if (error) {
+                        reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
-                    if(!data._id) {
+                    if (!data._id) {
                         statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.NOT_FOUND.statusCode;
                     }
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));

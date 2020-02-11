@@ -7,6 +7,7 @@
 'use strict';
 
 const async = require('async');
+const Boom = require('@hapi/boom');
 const Moment = require('moment');
 const Utils = require('../utils');
 const Services = require('../services');
@@ -21,17 +22,12 @@ const Constants = require('../config/constants');
  */
 const generateToken = (payload, callback) => {
     var token = {};
-    var foundOldToken = false;
     let query = {
         emailId: payload.emailId
     }
     let userId = '';
     const seriesTasks = {
         task1_checkUserExists: (asyncCallback) => {
-            let unauthorizedBody = {
-                statusCode: Constants.HTTP_STATUS.CLIENT_ERROR.UNAUTHORIZED.statusCode,
-                message: "Invalid EmailId or Password"
-            }
 
             Services.userServices.getSingleUser(query, {}, {}, (err, data) => {
                 if (err) {
@@ -45,10 +41,10 @@ const generateToken = (payload, callback) => {
                             userId = data._id;
                             asyncCallback();
                         } else {
-                            asyncCallback(unauthorizedBody);
+                            asyncCallback(Boom.unauthorized("Invalid Email or Password"));
                         }
                     } else {
-                        asyncCallback(unauthorizedBody);
+                        asyncCallback(Boom.unauthorized("Invalid email or Password"));
                     }
                 }
             });
