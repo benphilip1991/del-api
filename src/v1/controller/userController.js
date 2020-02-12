@@ -112,10 +112,11 @@ const registerUser = (payload, credentials, callback) => {
 
 
 /**
- * Delete single - updates the deleteFlag
- * for the user to true. Users are not permanently
- * deleted from the system.
- * Only deletable users are effected
+ * Delete single - updates the deleteFlag for the user to true. 
+ * Users are not permanently deleted from the system.
+ * Only deletable users are effected.
+ * Patients cannot delete any account.
+ * Caregivers can only delete patient accounts
  * 
  * @param {*} userId 
  * @param {*} credential
@@ -134,22 +135,32 @@ const deleteSingleUser = (userId, credentials, callback) => {
                 password: 0
             };
 
-            Services.userServices.getSingleUser(query, projection, {}, (err, data) => {
-                if (err) {
-                    asyncCallback(err);
-                } else {
-                    // Not found
-                    if (null == data) {
-                        asyncCallback(Boom.notFound(`User ${userId} does not exist`));
-                    } else if (!data.deletable) {
-                        // Non deletable user
-                        asyncCallback(Boom.forbidden(`User ${userId} cannot be deleted`));
+            // Patient users are not permitted to delete users
+            if (credentials.userRole == Constants.USER_ROLES.PATIENT) {
+                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
+            } else {
+                Services.userServices.getSingleUser(query, projection, {}, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
                     } else {
-                        // User found
-                        asyncCallback();
+                        // Not found
+                        if (null == data) {
+                            asyncCallback(Boom.notFound(`User ${userId} does not exist`));
+                        } else if (!data.deletable) {
+                            // Non deletable user
+                            asyncCallback(Boom.forbidden(`User ${userId} cannot be deleted`));
+                        } else {
+                            // User found. Check permissions
+                            if (credentials.userRole == Constants.USER_ROLES.CAREGIVER
+                                && data.userRole != Constants.USER_ROLES.PATIENT) {
+                                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
+                            } else {
+                                asyncCallback();
+                            }
+                        }
                     }
-                }
-            });
+                });
+            }
         },
         task2_deleteUser: (asyncCallback) => {
             let updateData = {
@@ -203,7 +214,7 @@ const getSingleUser = (userId, credentials, callback) => {
             if (credentials.userRole == Constants.USER_ROLES.PATIENT
                 && userId != credentials.userId) {
                 // Patients can only get their own details
-                asyncCallback(Boom.forbidden(`User action not permitted`));
+                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
             } else {
                 Services.userServices.getSingleUser(query, projection, {}, (err, data) => {
                     if (err) {
@@ -212,8 +223,7 @@ const getSingleUser = (userId, credentials, callback) => {
                         if (null != data) {
                             if (credentials.userRole == Constants.USER_ROLES.CAREGIVER
                                 && data.userRole == Constants.USER_ROLES.ADMIN) {
-                                console.log(`Insufficient privelege`)
-                                asyncCallback(Boom.forbidden(`User action not permitted`));
+                                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
                             } else {
                                 singleUser = data;
                                 asyncCallback(null, singleUser);
@@ -248,7 +258,7 @@ const getAllUsers = (credentials, callback) => {
     const seriesTasks = {
         task1_getAllUsers: (asyncCallback) => {
             if (credentials.userRole == Constants.USER_ROLES.PATIENT) {
-                asyncCallback(Boom.forbidden(`User action not permitted`));
+                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
             } else {
                 let query = {
                     deleteFlag: false

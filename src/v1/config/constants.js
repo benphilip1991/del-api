@@ -91,13 +91,21 @@ const USER_ROLES = {
     CAREGIVER: "caregiver"
 }
 
+/**
+ * Messages
+ */
+const MESSAGES = {
+    ACTION_NOT_PERMITTED: "User action not permitted"
+}
+
 const CONSTANTS = {
     SERVER: SERVER,
     JWT_SECRETS: JWT_SECRETS,
     AUTH_CONFIG: AUTH_CONFIG,
     SWAGGER_OPTIONS: SWAGGER_OPTIONS,
     HTTP_STATUS: HTTP_STATUS,
-    USER_ROLES: USER_ROLES
+    USER_ROLES: USER_ROLES,
+    MESSAGES: MESSAGES
 }
 
 module.exports = CONSTANTS;
