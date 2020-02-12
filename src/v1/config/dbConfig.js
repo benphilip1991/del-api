@@ -8,6 +8,7 @@
 const Mongoose = require('mongoose');
 const Moment = require('moment');
 const UserService = require('../services/userServices');
+const Utils = require('../utils');
 
 const database = {
     dbUri: process.env.DB_URI || 'mongodb://localhost/del',
@@ -31,7 +32,7 @@ const adminUser = {
     firstName: process.env.SU_FIRSTNAME,
     lastName: process.env.SU_LASTNAME,
     emailId: process.env.SU_EMAILID,
-    password: process.env.SU_PASSWORD,
+    password: Utils.DelUtils.encryptPassword(process.env.SU_PASSWORD),
     age: process.env.SU_AGE,
     sex: process.env.SU_SEX,
     userRole: process.env.SU_USERROLE,

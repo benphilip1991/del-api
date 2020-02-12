@@ -10,7 +10,6 @@ const Moment = require('moment');
 const Mongoose = require('mongoose');
 const Controller = require('../controller');
 const Constants = require('../config/constants');
-const utils = require('../utils/delUtils');
 
 /**
  * Route definitions and Joi validation for users.
@@ -57,12 +56,7 @@ const getUser = {
             const responseCallback = (error, data) => {
                 if (error) {
                     console.log(`${Moment()} Error in Getting specific user`);
-                    var statusCode = Constants.HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR.statusCode;
-                    reject(
-                        h.response(
-                            utils.buildErrorResponse(error)).
-                            code(statusCode).header('Content-Type', 'application/json')
-                    );
+                    reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
                     if (!data._id) {
@@ -71,7 +65,7 @@ const getUser = {
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
                 }
             }
-            Controller.UserController.getSingleUser(request.params.userId, responseCallback);
+            Controller.UserController.getSingleUser(request.params.userId, request.auth.credentials, responseCallback);
         });
     }
 }
@@ -98,11 +92,7 @@ const getAllUsers = {
             const responseCallback = (error, data) => {
                 if (error) {
                     console.log(`${Moment()} Error getting users`);
-                    var statusCode = Constants.HTTP_STATUS.SERVER_ERROR.INTERNAL_SERVER_ERROR.statusCode;
-                    reject(
-                        h.response(utils.buildErrorResponse(error)).
-                            code(statusCode).header('Content-Type', 'application/json')
-                    );
+                    reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
 
@@ -113,7 +103,7 @@ const getAllUsers = {
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
                 }
             }
-            Controller.UserController.getAllUsers(responseCallback);
+            Controller.UserController.getAllUsers(request.auth.credentials, responseCallback);
         });
     }
 }
@@ -137,8 +127,14 @@ const registerUser = {
                 age: Joi.number().required(),
                 sex: Joi.string().required().regex(/^[a-zA-Z ]+$/).max(6),
                 password: Joi.string().required().trim().min(6),
+                userRole: Joi.string().equal(
+                    Constants.USER_ROLES.ADMIN,
+                    Constants.USER_ROLES.CAREGIVER,
+                    Constants.USER_ROLES.PATIENT
+                ),
                 creationDate: Joi.any().forbidden(),
-                deleteFlag: Joi.any().forbidden()
+                deleteFlag: Joi.any().forbidden(),
+                deletable: Joi.any().forbidden()
             }
         }
     },
@@ -159,7 +155,7 @@ const registerUser = {
                 }
             }
 
-            Controller.UserController.registerUser(request.payload, responseCallback);
+            Controller.UserController.registerUser(request.payload, request.auth.credentials, responseCallback);
         });
     }
 }
@@ -205,7 +201,7 @@ const deleteSingleUser = {
             // Response callback
             const responseCallback = (error, data) => {
                 if (error) {
-                        reject(error);
+                    reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
                     if (!data._id) {
@@ -215,7 +211,7 @@ const deleteSingleUser = {
                 }
             }
 
-            Controller.UserController.deleteSingleUser(request.params.userId, responseCallback);
+            Controller.UserController.deleteSingleUser(request.params.userId, request.auth.credentials, responseCallback);
         });
     }
 }

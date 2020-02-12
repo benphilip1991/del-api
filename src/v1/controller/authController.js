@@ -26,6 +26,7 @@ const generateToken = (payload, callback) => {
         emailId: payload.emailId
     }
     let userId = '';
+    let userRole = '';
     const seriesTasks = {
         task1_checkUserExists: (asyncCallback) => {
 
@@ -39,6 +40,7 @@ const generateToken = (payload, callback) => {
                             // Validated
                             console.log(`${Moment()} Password validated`);
                             userId = data._id;
+                            userRole = data.userRole;
                             asyncCallback();
                         } else {
                             asyncCallback(Boom.unauthorized("Invalid Email or Password"));
@@ -46,6 +48,8 @@ const generateToken = (payload, callback) => {
                     } else {
                         asyncCallback(Boom.unauthorized("Invalid email or Password"));
                     }
+                    // Need to call the above callback in the else blocks,
+                    // else the asyncCallback is called twice - crash on async
                 }
             });
         },
@@ -65,7 +69,7 @@ const generateToken = (payload, callback) => {
         task3_generateToken: (asyncCallback) => {
             console.log(`${Moment()} Generating token for user ${userId}`)
             // Using userId for token generation
-            token.bearer = Utils.AuthUtils.generateToken(userId);
+            token.bearer = Utils.AuthUtils.generateToken(userId, userRole);
             asyncCallback();
         },
         task4_storeToken: (asyncCallback) => {

@@ -8,18 +8,20 @@
 const async = require('async');
 const Boom = require('@hapi/boom');
 const Moment = require('moment');
-const utils = require('../utils/delUtils');
+const Utils = require('../utils/delUtils');
 const Services = require('../services');
 const Constants = require('../config/constants');
 
 /**
- * POST user controller - creates one record for a 
- * new user
+ * POST user controller - creates one record for a new user.
+ * Only admins and caregivers can use this API and by default,
+ * a patient is created unless specified in the payload
  * 
  * @param {*} payload 
+ * @param {*} credential
  * @param {*} callback 
  */
-const registerUser = (payload, callback) => {
+const registerUser = (payload, credentials, callback) => {
     var createdUser = {};
     let query = {
         emailId: payload.emailId,
@@ -54,12 +56,15 @@ const registerUser = (payload, callback) => {
         },
         task2_registerUser: (asyncCallback) => {
             if (payload.password) {
-                payload.password = utils.encryptPassword(payload.password);
+                payload.password = Utils.encryptPassword(payload.password);
             }
             // Add additional details - creationDate, userRole and deleteFlag
             payload.deleteFlag = false;
+            payload.deletable = true;
             payload.creationDate = Moment().utc().valueOf();
-            payload.userRole = Constants.USER_ROLES.PATIENT;
+            if (!payload.userRole) {
+                payload.userRole = Constants.USER_ROLES.PATIENT;
+            }
 
             if (!userExists) {
                 // Mongoose returns created object in the data parameter
@@ -113,9 +118,10 @@ const registerUser = (payload, callback) => {
  * Only deletable users are effected
  * 
  * @param {*} userId 
+ * @param {*} credential
  * @param {*} callback 
  */
-const deleteSingleUser = (userId, callback) => {
+const deleteSingleUser = (userId, credentials, callback) => {
     var deletedUser = {};
     let query = {
         _id: userId,
@@ -135,8 +141,8 @@ const deleteSingleUser = (userId, callback) => {
                     // Not found
                     if (null == data) {
                         asyncCallback(Boom.notFound(`User ${userId} does not exist`));
-                    } else if(!data.deleteFlag) {
-                        // non deletable user
+                    } else if (!data.deletable) {
+                        // Non deletable user
                         asyncCallback(Boom.forbidden(`User ${userId} cannot be deleted`));
                     } else {
                         // User found
@@ -170,12 +176,16 @@ const deleteSingleUser = (userId, callback) => {
 }
 
 /**
- * Get single user if the id is valid
+ * Get single user if the id is valid.
+ * Patients can only get their own data.
+ * Caregivers can only get their own or patient data.
+ * Access to admin details are restricted.
  * 
  * @param {*} userId 
+ * @param {*} credentials
  * @param {*} callback 
  */
-const getSingleUser = (userId, callback) => {
+const getSingleUser = (userId, credentials, callback) => {
     var singleUser = {};
     const seriesTasks = {
         task1_getSingleUser: (asyncCallback) => {
@@ -186,19 +196,32 @@ const getSingleUser = (userId, callback) => {
             let projection = {
                 __v: 0,
                 password: 0,
-                deleteFlag: 0
+                deleteFlag: 0,
+                deletable: 0
             };
 
-            Services.userServices.getSingleUser(query, projection, {}, (err, data) => {
-                if (err) {
-                    asyncCallback(err);
-                } else {
-                    if (null != data) {
-                        singleUser = data;
+            if (credentials.userRole == Constants.USER_ROLES.PATIENT
+                && userId != credentials.userId) {
+                // Patients can only get their own details
+                asyncCallback(Boom.forbidden(`User action not permitted`));
+            } else {
+                Services.userServices.getSingleUser(query, projection, {}, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
+                    } else {
+                        if (null != data) {
+                            if (credentials.userRole == Constants.USER_ROLES.CAREGIVER
+                                && data.userRole == Constants.USER_ROLES.ADMIN) {
+                                console.log(`Insufficient privelege`)
+                                asyncCallback(Boom.forbidden(`User action not permitted`));
+                            } else {
+                                singleUser = data;
+                                asyncCallback(null, singleUser);
+                            }
+                        }
                     }
-                    asyncCallback();
-                }
-            });
+                });
+            }
         }
     }
 
@@ -213,33 +236,48 @@ const getSingleUser = (userId, callback) => {
 }
 
 /**
- * Get all registered users
+ * Get all registered users.
+ * Patients do not have access to this API.
+ * Caregivers can only get other caregivers and patients.
  * 
+ * @param {*} credentials
  * @param {*} callback 
  */
-const getAllUsers = (callback) => {
+const getAllUsers = (credentials, callback) => {
     var userList = {};
     const seriesTasks = {
         task1_getAllUsers: (asyncCallback) => {
-            let query = {
-                deleteFlag: false
-            }
-            let projection = {
-                __v: 0,
-                password: 0,
-                deleteFlag: 0
-            };
-
-            Services.userServices.getAllUsers(query, projection, {}, (err, data) => {
-                if (err) {
-                    asyncCallback(err);
-                } else {
-                    if (null != data && data.length != 0) {
-                        userList.users = data;
-                    }
-                    asyncCallback();
+            if (credentials.userRole == Constants.USER_ROLES.PATIENT) {
+                asyncCallback(Boom.forbidden(`User action not permitted`));
+            } else {
+                let query = {
+                    deleteFlag: false
                 }
-            });
+                let projection = {
+                    __v: 0,
+                    password: 0,
+                    deleteFlag: 0,
+                    deletable: 0
+                };
+
+                if (credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
+                    query.$or = [
+                        { userRole: Constants.USER_ROLES.CAREGIVER },
+                        { userRole: Constants.USER_ROLES.PATIENT }
+                    ]
+                }
+
+                Services.userServices.getAllUsers(query, projection, {}, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
+                    } else {
+                        if (null != data && data.length != 0) {
+                            userList.users = data;
+                        }
+                        asyncCallback();
+                    }
+                });
+            }
         }
     }
 

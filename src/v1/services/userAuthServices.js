@@ -28,7 +28,7 @@ const getUserToken = (query, projection, options, callback) => {
  */
 const deleteUserToken = (query, callback) => {
 
-    console.log(`Removing tokens for user ${query.userId}`);
+    console.log(`Removing previous tokens for user ${query.userId}`);
     Models.userAuthModel.deleteOne(query, callback);
 }
 

@@ -41,9 +41,10 @@ const serverInit = async () => {
     server.auth.strategy(config.CONSTANTS.AUTH_CONFIG.AUTH_STRATEGY, 'bearer-access-token', {
         allowMultipleHeaders: false,
         tokenType: 'Bearer',
-        validate: (request, token, h) => {
+        validate: async (request, token, h) => {
             let isValid = false;
-            let credentials = AuthUtils.verifyToken(token);
+            var credentials = {},
+            credentials = AuthUtils.verifyToken(token);
             if (credentials && credentials.userId) {
                 isValid = true;
             }

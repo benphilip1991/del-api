@@ -16,7 +16,7 @@ const returnError = (data) => {
 
 /**
  * Encrypt password using BCrypt
- * @param {*} plaintextPassword 
+ * @param {String} plaintextPassword 
  */
 const encryptPassword = (plaintextPassword) => {
 
