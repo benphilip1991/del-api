@@ -17,6 +17,9 @@ const Constants = require('../config/constants');
  * Only admins and caregivers can use this API and by default,
  * a patient is created unless specified in the payload
  * 
+ * Patients cannot create other accounts
+ * Caregivers can only create patient accounts
+ * 
  * @param {*} payload 
  * @param {*} credential
  * @param {*} callback 
@@ -34,25 +37,35 @@ const registerUser = (payload, credentials, callback) => {
                 password: 0
             };
 
-            Services.userServices.getSingleUser(query, projection, {}, (err, data) => {
-                if (err) {
-                    asyncCallback(err);
-                } else {
-                    //data.hasOwnProperty("_id") not working
-                    if (null !== data && data._id) {
-                        // if the user exists and is active, return a conflict
-                        if (!data.deleteFlag) {
-                            asyncCallback(Boom.conflict(`User ${payload.emailId} already exists.`));
+            // Patients are not permitted to create other accounts
+            if (credentials.userRole == Constants.USER_ROLES.PATIENT) {
+                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
+            } else if (credentials.userRole == Constants.USER_ROLES.CAREGIVER
+                && payload.userRole != Constants.USER_ROLES.PATIENT) {
+
+                // Caregivers can only create patients
+                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
+            } else {
+                Services.userServices.getSingleUser(query, projection, {}, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
+                    } else {
+                        //data.hasOwnProperty("_id") not working
+                        if (null !== data && data._id) {
+                            // if the user exists and is active, return a conflict
+                            if (!data.deleteFlag) {
+                                asyncCallback(Boom.conflict(`User ${payload.emailId} already exists.`));
+                            } else {
+                                userExists = true;
+                                asyncCallback();
+                            }
                         } else {
-                            userExists = true;
+                            // User doesn't exist; create using task2
                             asyncCallback();
                         }
-                    } else {
-                        // User doesn't exist; create using task2
-                        asyncCallback();
                     }
-                }
-            });
+                });
+            }
         },
         task2_registerUser: (asyncCallback) => {
             if (payload.password) {
