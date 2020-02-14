@@ -10,10 +10,10 @@ const Models = require('../models');
 
 /**
  * Get user token
- * @param {*} query 
- * @param {*} projection 
- * @param {*} options 
- * @param {*} callback 
+ * @param {object} query 
+ * @param {object} projection 
+ * @param {object} options 
+ * @param {function(err, data)} callback 
  */
 const getUserToken = (query, projection, options, callback) => {
 
@@ -23,8 +23,8 @@ const getUserToken = (query, projection, options, callback) => {
 
 /**
  * Remove auth tokens for given user
- * @param {*} query 
- * @param {*} callback 
+ * @param {object} query 
+ * @param {function(err, data)} callback 
  */
 const deleteUserToken = (query, callback) => {
 
@@ -34,8 +34,8 @@ const deleteUserToken = (query, callback) => {
 
 /**
  * Set new user token
- * @param {*} userTokenMap 
- * @param {*} callback 
+ * @param {object} userTokenMap 
+ * @param {function(err, data)} callback 
  */
 const setUserToken = (userTokenMap, callback) => {
     

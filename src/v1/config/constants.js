@@ -34,6 +34,13 @@ const SWAGGER_OPTIONS = {
         'title': 'DEL API Documentation',
         'version': '0.0.1'
     },
+    securityDefinitions: {
+        'auth_token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
+    },
     documentationPath: '/docs',
     grouping: 'tags'
 }
@@ -88,14 +95,16 @@ const HTTP_STATUS = {
 const USER_ROLES = {
     ADMIN: "admin",
     PATIENT: "patient",
-    CAREGIVER: "caregiver"
+    CAREGIVER: "caregiver",
+    DEVELOPER: "developer"
 }
 
 /**
  * Messages
  */
 const MESSAGES = {
-    ACTION_NOT_PERMITTED: "User action not permitted"
+    ACTION_NOT_PERMITTED: "User action not permitted",
+    BAD_PARAMETER: "Bad request parameter!"
 }
 
 const CONSTANTS = {

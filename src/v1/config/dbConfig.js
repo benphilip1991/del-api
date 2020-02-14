@@ -36,7 +36,7 @@ const adminUser = {
     age: process.env.SU_AGE,
     sex: process.env.SU_SEX,
     userRole: process.env.SU_USERROLE,
-    deleteFlag: false,
+    deleted: false,
     deletable: false,
     creationDate: Moment().utc().valueOf()
 }
