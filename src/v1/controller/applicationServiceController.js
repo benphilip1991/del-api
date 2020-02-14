@@ -11,7 +11,7 @@ const async = require('async');
 const Boom = require('@hapi/boom');
 const Moment = require('moment');
 const Services = require('../services');
-const Contants = require('../config');
+const Constants = require('../config/constants');
 
 /**
  * Get details for a given application.
@@ -23,7 +23,40 @@ const Contants = require('../config');
  * @param {function(err, data)} callback 
  */
 const getSingleApplicationDetails = (serviceId, callback) => {
+    var service = {};
+    const seriesTasks = {
+        task1_getSingleServiceDetails: (asyncCallback) => {
+            let query = {
+                _id: serviceId,
+                deleted: false
+            };
+            let projection = {
+                __v: 0,
+                deleted: 0
+            };
 
+            // Unauthorized users already blocked at the route filter
+            Services.applicationServices.getServiceDetails(query, projection, {}, (err, data) => {
+                if (err) {
+                    asyncCallback(err);
+                } else {
+                    if (null != data) {
+                        service = data;
+                        asyncCallback();
+                    }
+                }
+            });
+        }
+    }
+
+    // Perform series tasks
+    async.series(seriesTasks, (err) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, service);
+        }
+    })
 }
 
 /**
@@ -35,7 +68,40 @@ const getSingleApplicationDetails = (serviceId, callback) => {
  * @param {function(err, data)} callback 
  */
 const getAllApplicationsDetails = (callback) => {
+    var serviceList = {};
+    const seriesTasks = {
+        task1_getAllServices: (asyncCallback) => {
+            let query = {
+                deleted: false
+            };
+            let projection = {
+                __v: 0,
+                deleted: false
+            };
 
+            Services.applicationServices.getAllServicesDetails(
+                query, projection, {}, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
+                    } else {
+                        if (null != data && data.length != 0) {
+                            serviceList = data;
+                        }
+                        asyncCallback();
+                    }
+                }
+            );
+        }
+    }
+
+    // Fetch all services
+    async.series(seriesTasks, (err) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, serviceList);
+        }
+    });
 }
 
 /**
@@ -48,7 +114,64 @@ const getAllApplicationsDetails = (callback) => {
  * @param {function(err, data)} callback 
  */
 const deleteServiceDetails = (serviceId, credentials, callback) => {
+    var deletedService = {};
+    let query = {
+        _id: serviceId,
+        deleted: false
+    };
+    const seriesTasks = {
+        task1_checkServiceExists: (asyncCallback) => {
+            let projection = {
+                __v: 0
+            };
 
+            // Patients and Caregivers are not allowed to delete services
+            if (credentials.userRole == Constants.USER_ROLES.PATIENT
+                || credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
+                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
+            } else {
+                Services.applicationServices.getSingleApplicationDetails(
+                    query, projection, {}, (err, data) => {
+                        if (err) {
+                            asyncCallback(err);
+                        } else {
+                            //Service not found
+                            if (null == data) {
+                                asyncCallback(Boom.notFound(`Service ${serviceId} does not exist`));
+                            } else {
+                                // Service found
+                                asyncCallback();
+                            }
+                        }
+                    }
+                );
+            }
+        },
+        task2_deleteService: (asyncCallback) => {
+            let updateData = {
+                deleted: true
+            }
+            Services.applicationServices.updateServiceDetails(query, updateData,
+                { upsert: false }, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
+                    } else {
+                        deletedService._id = data._id;
+                        asyncCallback();
+                    }
+                }
+            );
+        }
+    }
+
+    // Perform series tasks
+    async.series(seriesTasks, (err) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, deletedService);
+        }
+    });
 }
 
 /**
@@ -62,7 +185,61 @@ const deleteServiceDetails = (serviceId, credentials, callback) => {
  * @param {function(err, data)} callback 
  */
 const updateServiceDetails = (serviceId, payload, credentials, callback) => {
+    var updatedService = {};
+    let query = {
+        _id: serviceId,
+        deleted: false
+    };
+    const seriesTasks = {
+        task1_checkServiceExists: (asyncCallback) => {
+            let projection = {
+                __v: 0
+            };
 
+            // Patients and Caregivers are not allowed to update services
+            if (credentials.userRole == Constants.USER_ROLES.PATIENT
+                || credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
+                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
+            } else {
+                Services.applicationServices.getSingleApplicationDetails(
+                    query, projection, {}, (err, data) => {
+                        if (err) {
+                            asyncCallback(err);
+                        } else {
+                            //Service not found
+                            if (null == data) {
+                                asyncCallback(Boom.notFound(`Service ${serviceId} does not exist`));
+                            } else {
+                                // Service found
+                                asyncCallback();
+                            }
+                        }
+                    }
+                );
+            }
+        },
+        task2_updateService: (asyncCallback) => {
+            Services.applicationServices.updateServiceDetails(query, payload,
+                { upsert: false }, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
+                    } else {
+                        updatedService._id = data._id;
+                        asyncCallback();
+                    }
+                }
+            );
+        }
+    }
+
+    // Perform series tasks
+    async.series(seriesTasks, (err) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, updatedService);
+        }
+    });
 }
 
 /**
@@ -71,14 +248,87 @@ const updateServiceDetails = (serviceId, payload, credentials, callback) => {
  * Only admins and developers are allowed to create a service.
  * All other users are rejected
  * 
- * TODO: add admin approval for services. Developers can request registration
+ * TODO: add admin approval for services. 
+ * Right now, developers and admins can register services
  * 
  * @param {object} payload 
  * @param {object} credentials 
  * @param {function(err, data)} callback 
  */
 const createNewApplicationService = (payload, credentials, callback) => {
+    let registeredService = {};
+    let query = {
+        developerId: payload.serviceName
+    };
+    var serviceExists = false;
+    const seriesTasks = {
+        task1_checkServiceExists: (asyncCallback) => {
+            let projection = {
+                __v: 0
+            }
 
+            // Patients and caregivers are not allowed to create services
+            if (credentials.userRole == Constants.USER_ROLES.PATIENT
+                || credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
+                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
+            } else {
+                Services.applicationServices.getServiceDetails(query, projection, {}, (err, data) => {
+                    if (null != data && data._id) {
+                        if (!data.deleted) {
+                            asyncCallback(Boom.conflict(`Service ${payload.serviceName} already exists.`));
+                        } else {
+                            serviceExists = true; //soft-deleted service record found
+                            asyncCallback();
+                        }
+                    } else {
+                        asyncCallback();
+                    }
+                });
+            }
+        },
+        task2_registerService: (asyncCallback) => {
+            payload.deleted = false;
+            payload.serviceRegistrationDate = Moment().utc().valueOf();
+
+            if (!serviceExists) {
+                Services.applicationServices.createServiceDetails(payload, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
+                    } else {
+                        registeredService = {
+                            _id: data._id,
+                            serviceName: data.serviceName
+                        }
+                        asyncCallback();
+                    }
+                });
+            } else {
+                console.log(`${Moment()} Service exists. Restoring service and updating details.`)
+                Services.applicationServices.updateServiceDetails(query, payload,
+                    { upsert: false }, (err, data) => {
+                        if(err) {
+                            asyncCallback(err);
+                        } else {
+                            registeredService = {
+                                _id: data._id,
+                                serviceName: data.serviceName
+                            }
+                            asyncCallback();
+                        }
+                    }
+                );
+            }
+        }
+    }
+
+    // Perform async operations
+    async.series(seriesTasks, (err) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, registeredService);
+        }
+    })
 }
 
 module.exports = {

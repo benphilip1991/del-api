@@ -239,7 +239,7 @@ const getSingleUser = (userId, credentials, callback) => {
                                 asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
                             } else {
                                 singleUser = data;
-                                asyncCallback(null, singleUser);
+                                asyncCallback();
                             }
                         }
                     }

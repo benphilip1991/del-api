@@ -49,7 +49,7 @@ const getApplicationService = {
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
-                if(error) {
+                if (error) {
                     console.log(`${Moment()} Error in fetching service details`);
                     reject(error);
                 } else {
@@ -89,14 +89,11 @@ const getAllApplicationServices = {
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
-                if(error) {
+                if (error) {
                     console.log(`${Moment()} Error in fetching service details`);
                     reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
-                    if (!data._id) {
-                        statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.NOT_FOUND.statusCode;
-                    }
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
                 }
             }
@@ -139,7 +136,7 @@ const deleteApplicationService = {
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
-                if(error) {
+                if (error) {
                     console.log(`${Moment()} Error in deleting service`);
                     reject(error);
                 } else {
@@ -168,7 +165,19 @@ const registerNewApplicationService = {
         tags: ['api', 'service'],
         validate: {
             payload: {
-
+                developerId: Joi.string().required().trim().regex(/^[a-zA-Z0-9]+$/),
+                serviceName: Joi.string().required().trim().regex(/^[a-zA-Z0-9]+$/),
+                serviceDescription: Joi.string().required().trim().regex(/^[a-zA-Z0-9 ]+$/),
+                serviceUrl: Joi.string().required().trim(),
+                serviceIconUrl: Joi.string().required().trim(),
+                dataDescription: Joi.object({
+                    dataCollected: Joi.array().items(Joi.object({
+                        dataType: Joi.string().required().trim(),
+                        description: Joi.string().required().trim()
+                    })).allow(null)
+                }).allow(null),
+                serviceRegistrationDate: Joi.any().forbidden(),
+                deleted: Joi.any().forbidden()
             }
         },
         plugins: {
@@ -184,7 +193,7 @@ const registerNewApplicationService = {
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
-                if(error) {
+                if (error) {
                     console.log(`${Moment()} Error in creating new service`);
                     reject(error);
                 } else {
@@ -216,7 +225,18 @@ const updateApplicationDetails = {
                 serviceId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             },
             payload: {
-
+                serviceName: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/),
+                serviceDescription: Joi.string().trim().regex(/^[a-zA-Z0-9 ]+$/),
+                serviceUrl: Joi.string().trim(),
+                serviceIconUrl: Joi.string().trim(),
+                dataDescription: Joi.object({
+                    dataCollected: Joi.array().items(Joi.object({
+                        dataType: Joi.string().trim(),
+                        description: Joi.string().trim()
+                    })).allow(null)
+                }).allow(null),
+                serviceRegistrationDate: Joi.any().forbidden(),
+                deleted: Joi.any().forbidden()
             }
         },
         plugins: {
@@ -238,7 +258,7 @@ const updateApplicationDetails = {
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
-                if(error) {
+                if (error) {
                     console.log(`${Moment()} Error in fetching service details`);
                     reject(error);
                 } else {

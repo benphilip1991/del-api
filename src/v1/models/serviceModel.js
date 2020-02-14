@@ -9,9 +9,11 @@ const Schema = Mongoose.Schema;
 
 const serviceSchema = new Schema({
     developerId: { type: String, required: true },
+    serviceName: {type: String, required: true},
     serviceDescription: { type: String, required: true },
     serviceUrl: { type: String, required: true },
     serviceIconUrl: { type: String, required: true },
+    serviceRegistrationDate: { type: Date, required: true },
     dataDescription: {
         dataCollected: [
             {
