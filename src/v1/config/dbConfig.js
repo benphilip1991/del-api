@@ -7,7 +7,8 @@
 
 const Mongoose = require('mongoose');
 const Moment = require('moment');
-const UserService = require('../services/userServices');
+const Services = require('../services');
+
 const Utils = require('../utils');
 
 const database = {
@@ -27,7 +28,7 @@ try {
     process.exit(1); // No database connection. Terminate
 }
 
-// Create admin user
+// Create admin and developer profiles
 const adminUser = {
     firstName: process.env.SU_FIRSTNAME,
     lastName: process.env.SU_LASTNAME,
@@ -41,23 +42,46 @@ const adminUser = {
     creationDate: Moment().utc().valueOf()
 }
 
-UserService.getSingleUser({emailId: adminUser.emailId}, {}, {}, (err, data) => {
+const devProfile = {
+    devName: process.env.DEV_NAME
+}
+
+Services.userServices.getSingleUser({emailId: adminUser.emailId}, {}, {}, (err, data) => {
     if(err) {
         console.log(`Database error. Terminating app \n${err}\n`);
         process.exit(1);
     } else {
         if(null == data) {
             console.log('Creating admin.');
-            UserService.createNewUser(adminUser, (err, data) => {
+            Services.userServices.createNewUser(adminUser, (err, data) => {
                 if(err) {
                     console.log(err)
                 } else {
-                    console.log('Admin created')
+                    console.log('Admin created');
                 }
             })
         }
     }
-})
+});
+
+// Create default developer profile
+Services.developerServices.getSingleDeveloper({devName: devProfile.devName}, {}, {}, (err, data) => {
+    if(err) {
+        console.log(`Database error. Terminating app \n${err}\n`);
+        process.exit(1);
+    } else {
+        if(null == data) {
+            console.log('Creating default developer.');
+            Services.developerServices.createNewDeveloper(devProfile, (err, data) => {
+                if(err) {
+                    console.log(err)
+                } else {
+                    console.log('Default developer profile created');
+                }
+            })
+        }
+    } 
+});
 
 // Export config data just in case one needs the info elsewhere
 module.exports = {
