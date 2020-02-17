@@ -7,13 +7,13 @@
 const Mongoose = require('mongoose');
 const Schema = Mongoose.Schema;
 
-const serviceSchema = new Schema({
+const applicationSchema = new Schema({
     developerId: { type: String, required: true },
-    serviceName: {type: String, required: true},
-    serviceDescription: { type: String, required: true },
-    serviceUrl: { type: String, required: true },
-    serviceIconUrl: { type: String, required: true },
-    serviceRegistrationDate: { type: Date, required: true },
+    applicationName: {type: String, required: true},
+    applicationDescription: { type: String, required: true },
+    applicationUrl: { type: String, required: true },
+    applicationIconUrl: { type: String, required: true },
+    applicationRegistrationDate: { type: Date, required: true },
     dataDescription: {
         dataCollected: [
             {
@@ -26,6 +26,6 @@ const serviceSchema = new Schema({
 });
 
 // Compile schema
-const serviceModel = Mongoose.model('SERVICE', serviceSchema, 'services');
+const applicationModel = Mongoose.model('APPLICATION', applicationSchema, 'applications');
 
-module.exports = serviceModel;
+module.exports = applicationModel;

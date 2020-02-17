@@ -1,7 +1,7 @@
 /**
- * Application services controller for managing
- * applications that will be linked to user profiles
- * and run on the mobile container.
+ * Application controller for managing applications
+ * that will be linked to user profiles and run on
+ * the mobile container.
  * 
  * @author Ben Philip
  */
@@ -19,15 +19,15 @@ const Constants = require('../config/constants');
  * app details. Unregistered users are filtered off at the
  * route filter.
  * 
- * @param {string} serviceId  
+ * @param {string} applicationId  
  * @param {function(err, data)} callback 
  */
-const getSingleApplicationDetails = (serviceId, callback) => {
-    var service = {};
+const getSingleApplicationDetails = (applicationId, callback) => {
+    var application = {};
     const seriesTasks = {
-        task1_getSingleServiceDetails: (asyncCallback) => {
+        task1_getSingleApplicationDetails: (asyncCallback) => {
             let query = {
-                _id: serviceId,
+                _id: applicationId,
                 deleted: false
             };
             let projection = {
@@ -36,12 +36,12 @@ const getSingleApplicationDetails = (serviceId, callback) => {
             };
 
             // Unauthorized users already blocked at the route filter
-            Services.applicationServices.getServiceDetails(query, projection, {}, (err, data) => {
+            Services.applicationServices.getApplicationDetails(query, projection, {}, (err, data) => {
                 if (err) {
                     asyncCallback(err);
                 } else {
                     if (null != data) {
-                        service = data;
+                        application = data;
                     }
                     asyncCallback();
                 }
@@ -54,7 +54,7 @@ const getSingleApplicationDetails = (serviceId, callback) => {
         if (err) {
             callback(err);
         } else {
-            callback(null, service);
+            callback(null, application);
         }
     })
 }
@@ -68,9 +68,9 @@ const getSingleApplicationDetails = (serviceId, callback) => {
  * @param {function(err, data)} callback 
  */
 const getAllApplicationsDetails = (callback) => {
-    var serviceList = {};
+    var applicationList = {};
     const seriesTasks = {
-        task1_getAllServices: (asyncCallback) => {
+        task1_getAllApplications: (asyncCallback) => {
             let query = {
                 deleted: false
             };
@@ -79,13 +79,13 @@ const getAllApplicationsDetails = (callback) => {
                 deleted: false
             };
 
-            Services.applicationServices.getAllServicesDetails(
+            Services.applicationServices.getAllApplicationsDetails(
                 query, projection, {}, (err, data) => {
                     if (err) {
                         asyncCallback(err);
                     } else {
                         if (null != data && data.length != 0) {
-                            serviceList.services = data;
+                            applicationList.applications = data;
                         }
                         asyncCallback();
                     }
@@ -94,52 +94,52 @@ const getAllApplicationsDetails = (callback) => {
         }
     }
 
-    // Fetch all services
+    // Fetch all applications
     async.series(seriesTasks, (err) => {
         if (err) {
             callback(err);
         } else {
-            callback(null, serviceList);
+            callback(null, applicationList);
         }
     });
 }
 
 /**
- * Delete (soft-delete) a registered service.
- * Only admins and developers are allowed to delete a service.
+ * Delete (soft-delete) a registered application.
+ * Only admins and developers are allowed to delete a application.
  * All other users are rejected
  * 
- * @param {string} serviceId 
+ * @param {string} applicationId 
  * @param {object} credentials 
  * @param {function(err, data)} callback 
  */
-const deleteServiceDetails = (serviceId, credentials, callback) => {
-    var deletedService = {};
+const deleteApplicationDetails = (applicationId, credentials, callback) => {
+    var deletedApplication = {};
     let query = {
-        _id: serviceId,
+        _id: applicationId,
         deleted: false
     };
     const seriesTasks = {
-        task1_checkServiceExists: (asyncCallback) => {
+        task1_checkApplicationExists: (asyncCallback) => {
             let projection = {
                 __v: 0
             };
 
-            // Patients and Caregivers are not allowed to delete services
+            // Patients and Caregivers are not allowed to delete applications
             if (credentials.userRole == Constants.USER_ROLES.PATIENT
                 || credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
                 asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
             } else {
-                Services.applicationServices.getServiceDetails(
+                Services.applicationServices.getApplicationDetails(
                     query, projection, {}, (err, data) => {
                         if (err) {
                             asyncCallback(err);
                         } else {
-                            //Service not found
+                            // Application not found
                             if (null == data) {
-                                asyncCallback(Boom.notFound(`Service ${serviceId} does not exist`));
+                                asyncCallback(Boom.notFound(`Application ${applicationId} does not exist`));
                             } else {
-                                // Service found
+                                // Application found
                                 asyncCallback();
                             }
                         }
@@ -147,16 +147,16 @@ const deleteServiceDetails = (serviceId, credentials, callback) => {
                 );
             }
         },
-        task2_deleteService: (asyncCallback) => {
+        task2_deleteApplication: (asyncCallback) => {
             let updateData = {
                 deleted: true
             }
-            Services.applicationServices.updateServiceDetails(query, updateData,
+            Services.applicationServices.updateApplicationDetails(query, updateData,
                 { upsert: false }, (err, data) => {
                     if (err) {
                         asyncCallback(err);
                     } else {
-                        deletedService._id = data._id;
+                        deletedApplication._id = data._id;
                         asyncCallback();
                     }
                 }
@@ -169,48 +169,48 @@ const deleteServiceDetails = (serviceId, credentials, callback) => {
         if (err) {
             callback(err);
         } else {
-            callback(null, deletedService);
+            callback(null, deletedApplication);
         }
     });
 }
 
 /**
- * Update details of a registered service.
- * Only admins and developers are allowed to update a service.
+ * Update details of a registered application.
+ * Only admins and developers are allowed to update a application.
  * All other users are rejected
  * 
- * @param {string} serviceId 
+ * @param {string} applicationId 
  * @param {object} payload 
  * @param {object} credentials 
  * @param {function(err, data)} callback 
  */
-const updateServiceDetails = (serviceId, payload, credentials, callback) => {
-    var updatedService = {};
+const updateApplicationDetails = (applicationId, payload, credentials, callback) => {
+    var updatedApplication = {};
     let query = {
-        _id: serviceId,
+        _id: applicationId,
         deleted: false
     };
     const seriesTasks = {
-        task1_checkServiceExists: (asyncCallback) => {
+        task1_checkApplicationExists: (asyncCallback) => {
             let projection = {
                 __v: 0
             };
 
-            // Patients and Caregivers are not allowed to update services
+            // Patients and Caregivers are not allowed to update applications
             if (credentials.userRole == Constants.USER_ROLES.PATIENT
                 || credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
                 asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
             } else {
-                Services.applicationServices.getServiceDetails(
+                Services.applicationServices.getApplicationDetails(
                     query, projection, {}, (err, data) => {
                         if (err) {
                             asyncCallback(err);
                         } else {
-                            //Service not found
+                            //Application not found
                             if (null == data) {
-                                asyncCallback(Boom.notFound(`Service ${serviceId} does not exist`));
+                                asyncCallback(Boom.notFound(`Application ${applicationId} does not exist`));
                             } else {
-                                // Service found
+                                // Application found
                                 asyncCallback();
                             }
                         }
@@ -218,13 +218,13 @@ const updateServiceDetails = (serviceId, payload, credentials, callback) => {
                 );
             }
         },
-        task2_updateService: (asyncCallback) => {
-            Services.applicationServices.updateServiceDetails(query, payload,
+        task2_updateApplication: (asyncCallback) => {
+            Services.applicationServices.updateApplicationDetails(query, payload,
                 { upsert: false }, (err, data) => {
                     if (err) {
                         asyncCallback(err);
                     } else {
-                        updatedService._id = data._id;
+                        updatedApplication._id = data._id;
                         asyncCallback();
                     }
                 }
@@ -237,31 +237,30 @@ const updateServiceDetails = (serviceId, payload, credentials, callback) => {
         if (err) {
             callback(err);
         } else {
-            callback(null, updatedService);
+            callback(null, updatedApplication);
         }
     });
 }
 
 /**
- * Create a new application service.
- * Update details of a registered service.
- * Only admins and developers are allowed to create a service.
+ * Create a new application.
+ * Only admins and developers are allowed to create an application.
  * All other users are rejected
  * 
- * TODO: add admin approval for services. 
- * Right now, developers and admins can register services
+ * TODO: add admin approval for applications. 
+ * Right now, developers and admins can register application
  * 
  * @param {object} payload 
  * @param {object} credentials 
  * @param {function(err, data)} callback 
  */
-const createNewApplicationService = (payload, credentials, callback) => {
-    let registeredService = {};
+const createNewApplication = (payload, credentials, callback) => {
+    let registeredApplication = {};
     let query = {
-        serviceName: payload.serviceName,
+        applicationName: payload.applicationName,
         developerId: payload.developerId
     };
-    var serviceExists = false;
+    var applicationExists = false;
     const seriesTasks = {
         task1_checkDeveloperExists: (asyncCallback) => {
             let devQuery = {
@@ -271,7 +270,7 @@ const createNewApplicationService = (payload, credentials, callback) => {
                 __v: 0
             };
 
-            // Patients and caregivers are not allowed to create services
+            // Patients and caregivers are not allowed to create applications
             if (credentials.userRole == Constants.USER_ROLES.PATIENT
                 || credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
                 asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
@@ -289,19 +288,19 @@ const createNewApplicationService = (payload, credentials, callback) => {
                 });
             }
         },
-        task2_checkServiceExists: (asyncCallback) => {
+        task2_checkApplicationExists: (asyncCallback) => {
             let projection = {
                 __v: 0
             }
 
-            Services.applicationServices.getServiceDetails(query, projection, {}, (err, data) => {
+            Services.applicationServices.getApplicationDetails(query, projection, {}, (err, data) => {
                 if (err) {
                     asyncCallback(err);
                 } else if (null != data && data._id) {
                     if (!data.deleted) {
-                        asyncCallback(Boom.conflict(`Service ${payload.serviceName} already exists.`));
+                        asyncCallback(Boom.conflict(`Application ${payload.applicationName} already exists.`));
                     } else {
-                        serviceExists = true; //soft-deleted service record found
+                        applicationExists = true; //soft-deleted application record found
                         asyncCallback();
                     }
                 } else {
@@ -309,32 +308,32 @@ const createNewApplicationService = (payload, credentials, callback) => {
                 }
             });
         },
-        task3_registerService: (asyncCallback) => {
+        task3_registerApplication: (asyncCallback) => {
             payload.deleted = false;
-            payload.serviceRegistrationDate = Moment().utc().valueOf();
+            payload.applicationRegistrationDate = Moment().utc().valueOf();
 
-            if (!serviceExists) {
-                Services.applicationServices.createServiceDetails(payload, (err, data) => {
+            if (!applicationExists) {
+                Services.applicationServices.createApplicationDetails(payload, (err, data) => {
                     if (err) {
                         asyncCallback(err);
                     } else {
-                        registeredService = {
+                        registeredApplication = {
                             _id: data._id,
-                            serviceName: data.serviceName
+                            applicationName: data.applicationName
                         }
                         asyncCallback();
                     }
                 });
             } else {
-                console.log(`${Moment()} Service exists. Restoring service and updating details.`)
-                Services.applicationServices.updateServiceDetails(query, payload,
+                console.log(`${Moment()} Application exists. Restoring and updating details.`)
+                Services.applicationServices.updateApplicationDetails(query, payload,
                     { upsert: false }, (err, data) => {
                         if (err) {
                             asyncCallback(err);
                         } else {
-                            registeredService = {
+                            registeredApplication = {
                                 _id: data._id,
-                                serviceName: data.serviceName
+                                applicationName: data.applicationName
                             }
                             asyncCallback();
                         }
@@ -349,7 +348,7 @@ const createNewApplicationService = (payload, credentials, callback) => {
         if (err) {
             callback(err);
         } else {
-            callback(null, registeredService);
+            callback(null, registeredApplication);
         }
     })
 }
@@ -357,7 +356,7 @@ const createNewApplicationService = (payload, credentials, callback) => {
 module.exports = {
     getSingleApplicationDetails: getSingleApplicationDetails,
     getAllApplicationsDetails: getAllApplicationsDetails,
-    deleteServiceDetails: deleteServiceDetails,
-    updateServiceDetails: updateServiceDetails,
-    createNewApplicationService: createNewApplicationService
+    deleteApplicationDetails: deleteApplicationDetails,
+    updateApplicationDetails: updateApplicationDetails,
+    createNewApplication: createNewApplication
 }

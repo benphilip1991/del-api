@@ -8,5 +8,6 @@ module.exports = {
     userServices: require('./userServices'),
     developerServices: require('./developerServices'),
     userAuthServices: require('./userAuthServices'),
-    applicationServices: require('./applicationServices')
+    applicationServices: require('./applicationServices'),
+    userApplicationServices: require('./userApplicationServices')
 }

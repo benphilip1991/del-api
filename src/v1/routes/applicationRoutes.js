@@ -1,5 +1,5 @@
 /**
- * Routes for applications services
+ * Routes for applications
  * 
  * @author Ben Philip
  */
@@ -18,19 +18,19 @@ const Constants = require('../config/constants');
 /**
  * Get specific application details
  */
-const getApplicationService = {
+const getApplication = {
     method: 'GET',
-    path: '/api/v1/service/{serviceId}',
+    path: '/api/v1/application/{applicationId}',
     config: {
         auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
-        description: 'Get single service details',
-        tags: ['api', 'service'],
+        description: 'Get single application details',
+        tags: ['api', 'application'],
         validate: {
             headers: Joi.object({
                 authorization: Joi.string()
             }).options({ allowUnknown: true }),
             params: {
-                serviceId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
+                applicationId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             }
         },
         plugins: {
@@ -42,26 +42,26 @@ const getApplicationService = {
     handler: (request, h) => {
         console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
 
-        // Verify if serviceId is a valid ObjectId, else reject
-        if (!Mongoose.Types.ObjectId.isValid(request.params.serviceId)) {
-            console.log('[INFO]', `${Moment()} --> Invalid serviceId`);
+        // Verify if applicationId is a valid ObjectId, else reject
+        if (!Mongoose.Types.ObjectId.isValid(request.params.applicationId)) {
+            console.log('[INFO]', `${Moment()} --> Invalid applicationId`);
             return Boom.badRequest(Constants.MESSAGES.BAD_PARAMETER);
         }
 
-        // Fetch and return service details
+        // Fetch and return application details
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
                 if (error) {
-                    console.log(`${Moment()} Error in fetching service details`);
+                    console.log(`${Moment()} Error in fetching application details`);
                     reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
                 }
             }
-            Controller.ApplicationServiceController.getSingleApplicationDetails(
-                request.params.serviceId, responseCallback);
+            Controller.ApplicationController.getSingleApplicationDetails(
+                request.params.applicationId, responseCallback);
         });
     }
 }
@@ -69,13 +69,13 @@ const getApplicationService = {
 /**
  * Get all application details
  */
-const getAllApplicationServices = {
+const getAllApplications = {
     method: 'GET',
-    path: '/api/v1/service',
+    path: '/api/v1/application',
     config: {
         auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
-        description: 'Get all service details',
-        tags: ['api', 'service'],
+        description: 'Get all application details',
+        tags: ['api', 'application'],
         validate: {
             headers: Joi.object({
                 authorization: Joi.string()
@@ -90,39 +90,39 @@ const getAllApplicationServices = {
     handler: (request, h) => {
         console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
 
-        // Fetch and return service details
+        // Fetch and return application details
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
                 if (error) {
-                    console.log(`${Moment()} Error in fetching service details`);
+                    console.log(`${Moment()} Error in fetching application details`);
                     reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
                 }
             }
-            Controller.ApplicationServiceController.getAllApplicationsDetails(responseCallback);
+            Controller.ApplicationController.getAllApplicationsDetails(responseCallback);
         });
     }
 }
 
 /**
- * Delete application service details
+ * Delete application details
  */
-const deleteApplicationService = {
+const deleteApplication = {
     method: 'DELETE',
-    path: '/api/v1/service/{serviceId}',
+    path: '/api/v1/application/{applicationId}',
     config: {
         auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
-        description: 'Delete service',
-        tags: ['api', 'service'],
+        description: 'Delete application',
+        tags: ['api', 'application'],
         validate: {
             headers: Joi.object({
                 authorization: Joi.string()
             }).options({ allowUnknown: true }),
             params: {
-                serviceId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
+                applicationId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             }
         },
         plugins: {
@@ -134,18 +134,18 @@ const deleteApplicationService = {
     handler: (request, h) => {
         console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
 
-        // Verify if serviceId is a valid ObjectId, else reject
-        if (!Mongoose.Types.ObjectId.isValid(request.params.serviceId)) {
-            console.log('[INFO]', `${Moment()} --> Invalid serviceId`);
+        // Verify if applicationId is a valid ObjectId, else reject
+        if (!Mongoose.Types.ObjectId.isValid(request.params.applicationId)) {
+            console.log('[INFO]', `${Moment()} --> Invalid applicationId`);
             return Boom.badRequest(Constants.MESSAGES.BAD_PARAMETER);
         }
 
-        // Fetch and return service details
+        // Fetch and return application details
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
                 if (error) {
-                    console.log(`${Moment()} Error in deleting service`);
+                    console.log(`${Moment()} Error in deleting application`);
                     reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
@@ -155,39 +155,39 @@ const deleteApplicationService = {
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
                 }
             }
-            Controller.ApplicationServiceController.deleteServiceDetails(
-                request.params.serviceId, request.auth.credentials, responseCallback);
+            Controller.ApplicationController.deleteApplicationDetails(
+                request.params.applicationId, request.auth.credentials, responseCallback);
         });
     }
 }
 
 /**
- * Create new application service
+ * Create new application
  */
-const registerNewApplicationService = {
+const registerNewApplication = {
     method: 'POST',
-    path: '/api/v1/service',
+    path: '/api/v1/application',
     config: {
         auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
-        description: 'Register new service',
-        tags: ['api', 'service'],
+        description: 'Register new application',
+        tags: ['api', 'application'],
         validate: {
             headers: Joi.object({
                 authorization: Joi.string()
             }).options({ allowUnknown: true }),
             payload: {
                 developerId: Joi.string().required().trim().regex(/^[a-zA-Z0-9]+$/),
-                serviceName: Joi.string().required().trim().regex(/^[a-zA-Z0-9]+$/),
-                serviceDescription: Joi.string().required().trim().regex(/^[a-zA-Z0-9 ]+$/),
-                serviceUrl: Joi.string().required().trim(),
-                serviceIconUrl: Joi.string().required().trim(),
+                applicationName: Joi.string().required().trim().regex(/^[a-zA-Z0-9]+$/),
+                applicationDescription: Joi.string().required().trim().regex(/^[a-zA-Z0-9 ]+$/),
+                applicationUrl: Joi.string().required().trim(),
+                applicationIconUrl: Joi.string().required().trim(),
                 dataDescription: Joi.object({
                     dataCollected: Joi.array().items(Joi.object({
                         dataType: Joi.string().required().trim(),
                         description: Joi.string().required().trim()
                     })).allow(null)
                 }).allow(null),
-                serviceRegistrationDate: Joi.any().forbidden(),
+                applicationRegistrationDate: Joi.any().forbidden(),
                 deleted: Joi.any().forbidden()
             }
         },
@@ -201,16 +201,16 @@ const registerNewApplicationService = {
         console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
 
         if (!Mongoose.Types.ObjectId.isValid(request.payload.developerId)) {
-            console.log('[INFO]', `${Moment()} --> Invalid serviceId`);
+            console.log('[INFO]', `${Moment()} --> Invalid applicationId`);
             return Boom.badRequest(Constants.MESSAGES.BAD_PARAMETER);
         }
 
-        // Fetch and return service details
+        // Fetch and return application details
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
                 if (error) {
-                    console.log(`${Moment()} Error in creating new service`);
+                    console.log(`${Moment()} Error in creating new application`);
                     reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
@@ -220,7 +220,7 @@ const registerNewApplicationService = {
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
                 }
             }
-            Controller.ApplicationServiceController.createNewApplicationService(
+            Controller.ApplicationController.createNewApplication(
                 request.payload, request.auth.credentials, responseCallback);
         });
     }
@@ -231,30 +231,30 @@ const registerNewApplicationService = {
  */
 const updateApplicationDetails = {
     method: 'PUT',
-    path: '/api/v1/service/{serviceId}',
+    path: '/api/v1/application/{applicationId}',
     config: {
         auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
-        description: 'Update given service details',
-        tags: ['api', 'service'],
+        description: 'Update given application details',
+        tags: ['api', 'application'],
         validate: {
             headers: Joi.object({
                 authorization: Joi.string()
             }).options({ allowUnknown: true }),
             params: {
-                serviceId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
+                applicationId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             },
             payload: {
-                serviceName: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/),
-                serviceDescription: Joi.string().trim().regex(/^[a-zA-Z0-9 ]+$/),
-                serviceUrl: Joi.string().trim(),
-                serviceIconUrl: Joi.string().trim(),
+                applicationName: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/),
+                applicationDescription: Joi.string().trim().regex(/^[a-zA-Z0-9 ]+$/),
+                applicationUrl: Joi.string().trim(),
+                applicationIconUrl: Joi.string().trim(),
                 dataDescription: Joi.object({
                     dataCollected: Joi.array().items(Joi.object({
                         dataType: Joi.string().trim(),
                         description: Joi.string().trim()
                     })).allow(null)
                 }).allow(null),
-                serviceRegistrationDate: Joi.any().forbidden(),
+                applicationRegistrationDate: Joi.any().forbidden(),
                 deleted: Joi.any().forbidden()
             }
         },
@@ -267,18 +267,18 @@ const updateApplicationDetails = {
     handler: (request, h) => {
         console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
 
-        // Verify if serviceId is a valid ObjectId, else reject
-        if (!Mongoose.Types.ObjectId.isValid(request.params.serviceId)) {
-            console.log('[INFO]', `${Moment()} --> Invalid serviceId`);
+        // Verify if applicationId is a valid ObjectId, else reject
+        if (!Mongoose.Types.ObjectId.isValid(request.params.applicationId)) {
+            console.log('[INFO]', `${Moment()} --> Invalid applicationId`);
             return Boom.badRequest(Constants.MESSAGES.BAD_PARAMETER);
         }
 
-        // Fetch and return service details
+        // Fetch and return application details
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
                 if (error) {
-                    console.log(`${Moment()} Error in fetching service details`);
+                    console.log(`${Moment()} Error in fetching application details`);
                     reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
@@ -288,18 +288,18 @@ const updateApplicationDetails = {
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
                 }
             }
-            Controller.ApplicationServiceController.updateServiceDetails(
-                request.params.serviceId, request.payload, request.auth.credentials, responseCallback);
+            Controller.ApplicationController.updateApplicationDetails(
+                request.params.applicationId, request.payload, request.auth.credentials, responseCallback);
         });
     }
 }
 
-const applicationServiceRoutes = [
-    getApplicationService,
-    getAllApplicationServices,
-    deleteApplicationService,
-    registerNewApplicationService,
+const applicationRoutes = [
+    getApplication,
+    getAllApplications,
+    deleteApplication,
+    registerNewApplication,
     updateApplicationDetails
 ]
 
-module.exports = applicationServiceRoutes;
+module.exports = applicationRoutes;

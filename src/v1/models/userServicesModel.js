@@ -14,16 +14,16 @@ const Schema = Mongoose.Schema;
  * Service schema for connecting users to their
  * linked services
  */
-const userServicesSchema = new Schema({
+const userApplicationSchema = new Schema({
     userId: { type: String, required: true },
-    services: [{
-        serviceId: { type: String, required: true },
+    applications: [{
+        applicationId: { type: String, required: true },
         assignedBy: { type: String, required: true },
         addedOn: { type: Date, required: true }
     }]
 });
 
 // Compile schema
-const userServicesModel = Mongoose.model('USERSERVICE', userServicesSchema, 'userservices');
+const userApplicationModel = Mongoose.model('USERSERVICE', userApplicationSchema, 'userservices');
 
-module.exports = userServicesModel;
+module.exports = userApplicationModel;

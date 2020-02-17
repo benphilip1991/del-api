@@ -7,8 +7,8 @@
 
  const userRoutes = require('./userRoutes');
  const authRoutes = require('./authRoutes');
- const appServiceRoutes = require('./applicationServiceRoutes');
+ const applicationRoutes = require('./applicationRoutes');
 
- var apiRoutes = [].concat(userRoutes, authRoutes, appServiceRoutes);
+ var apiRoutes = [].concat(userRoutes, authRoutes, applicationRoutes);
 
  module.exports = apiRoutes;

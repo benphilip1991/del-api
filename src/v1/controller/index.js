@@ -8,5 +8,5 @@
 module.exports = {
     UserController: require('./userController'),
     AuthController: require('./authController'),
-    ApplicationServiceController: require('./applicationServiceController')
+    ApplicationController: require('./applicationController')
 }
