@@ -18,7 +18,7 @@ const userApplicationSchema = new Schema({
     userId: { type: String, required: true },
     applications: [{
         applicationId: { type: String, required: true },
-        assignedBy: { type: String, required: true },
+        addedBy: { type: String, required: true },
         addedOn: { type: Date, required: true }
     }]
 });

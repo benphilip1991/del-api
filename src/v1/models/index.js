@@ -9,14 +9,14 @@
 const userModel = require('./userModel');
 const userAuthModel = require('./userAuthModel');
 const developerModel = require('./developerModel');
-const userServicesModel = require('./userServicesModel');
+const userApplicationsModel = require('./userApplicationsModel');
 const applicationModel = require('./applicationModel');
 
 const model = {
     userModel: userModel,
     userAuthModel: userAuthModel,
     developerModel: developerModel,
-    userServicesModel: userServicesModel,
+    userApplicationsModel: userApplicationsModel,
     applicationModel: applicationModel
 }
 

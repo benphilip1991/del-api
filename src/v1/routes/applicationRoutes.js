@@ -90,7 +90,7 @@ const getAllApplications = {
     handler: (request, h) => {
         console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
 
-        // Fetch and return application details
+        // Fetch and return all application details
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
@@ -140,7 +140,7 @@ const deleteApplication = {
             return Boom.badRequest(Constants.MESSAGES.BAD_PARAMETER);
         }
 
-        // Fetch and return application details
+        // Delete application details
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
@@ -205,7 +205,7 @@ const registerNewApplication = {
             return Boom.badRequest(Constants.MESSAGES.BAD_PARAMETER);
         }
 
-        // Fetch and return application details
+        // Register new application
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
@@ -273,7 +273,7 @@ const updateApplicationDetails = {
             return Boom.badRequest(Constants.MESSAGES.BAD_PARAMETER);
         }
 
-        // Fetch and return application details
+        // Update application details
         return new Promise((resolve, reject) => {
 
             const responseCallback = (error, data) => {
