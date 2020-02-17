@@ -27,6 +27,9 @@ const getUser = {
         description: 'Get single user details',
         tags: ['api', 'user'],
         validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true }),
             params: {
                 userId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             }
@@ -79,6 +82,11 @@ const getAllUsers = {
         auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
         description: 'Get all user records',
         tags: ['api', 'user'],
+        validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true })
+        },
         plugins: {
             'hapi-swagger': {
                 security: [{ 'auth_token': {} }]
@@ -123,6 +131,9 @@ const registerUser = {
         description: "Register new user",
         tags: ['api', 'user'],
         validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true }),
             payload: {
                 firstName: Joi.string().required().trim().regex(/^[a-zA-Z ]+$/),
                 lastName: Joi.string().required().trim().regex(/^[a-zA-Z ]+$/),
@@ -181,6 +192,9 @@ const deleteSingleUser = {
         description: 'Delete existing user',
         tags: ['api', 'user'],
         validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true }),
             params: {
                 userId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             }

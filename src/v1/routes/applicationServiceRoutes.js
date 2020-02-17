@@ -26,6 +26,9 @@ const getApplicationService = {
         description: 'Get single service details',
         tags: ['api', 'service'],
         validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true }),
             params: {
                 serviceId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             }
@@ -73,6 +76,11 @@ const getAllApplicationServices = {
         auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
         description: 'Get all service details',
         tags: ['api', 'service'],
+        validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true })
+        },
         plugins: {
             'hapi-swagger': {
                 security: [{ 'auth_token': {} }]
@@ -110,6 +118,9 @@ const deleteApplicationService = {
         description: 'Delete service',
         tags: ['api', 'service'],
         validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true }),
             params: {
                 serviceId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             }
@@ -161,6 +172,9 @@ const registerNewApplicationService = {
         description: 'Register new service',
         tags: ['api', 'service'],
         validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true }),
             payload: {
                 developerId: Joi.string().required().trim().regex(/^[a-zA-Z0-9]+$/),
                 serviceName: Joi.string().required().trim().regex(/^[a-zA-Z0-9]+$/),
@@ -223,6 +237,9 @@ const updateApplicationDetails = {
         description: 'Update given service details',
         tags: ['api', 'service'],
         validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true }),
             params: {
                 serviceId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             },

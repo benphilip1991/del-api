@@ -18,7 +18,8 @@ const userServicesSchema = new Schema({
     userId: { type: String, required: true },
     services: [{
         serviceId: { type: String, required: true },
-        assignedBy: { type: String, required: true }
+        assignedBy: { type: String, required: true },
+        addedOn: { type: Date, required: true }
     }]
 });
 
