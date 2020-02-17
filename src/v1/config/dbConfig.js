@@ -43,7 +43,9 @@ const adminUser = {
 }
 
 const devProfile = {
-    devName: process.env.DEV_NAME
+    devName: process.env.DEV_NAME,
+    deletable: false,
+    deleted: false
 }
 
 Services.userServices.getSingleUser({emailId: adminUser.emailId}, {}, {}, (err, data) => {

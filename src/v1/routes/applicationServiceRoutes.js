@@ -54,9 +54,6 @@ const getApplicationService = {
                     reject(error);
                 } else {
                     var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
-                    if (!data._id) {
-                        statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.NOT_FOUND.statusCode;
-                    }
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
                 }
             }
@@ -188,6 +185,11 @@ const registerNewApplicationService = {
     },
     handler: (request, h) => {
         console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
+
+        if (!Mongoose.Types.ObjectId.isValid(request.payload.developerId)) {
+            console.log('[INFO]', `${Moment()} --> Invalid serviceId`);
+            return Boom.badRequest(Constants.MESSAGES.BAD_PARAMETER);
+        }
 
         // Fetch and return service details
         return new Promise((resolve, reject) => {

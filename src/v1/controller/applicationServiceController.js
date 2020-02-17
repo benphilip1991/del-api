@@ -42,8 +42,8 @@ const getSingleApplicationDetails = (serviceId, callback) => {
                 } else {
                     if (null != data) {
                         service = data;
-                        asyncCallback();
                     }
+                    asyncCallback();
                 }
             });
         }
@@ -85,7 +85,7 @@ const getAllApplicationsDetails = (callback) => {
                         asyncCallback(err);
                     } else {
                         if (null != data && data.length != 0) {
-                            serviceList = data;
+                            serviceList.services = data;
                         }
                         asyncCallback();
                     }
@@ -130,7 +130,7 @@ const deleteServiceDetails = (serviceId, credentials, callback) => {
                 || credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
                 asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
             } else {
-                Services.applicationServices.getSingleApplicationDetails(
+                Services.applicationServices.getServiceDetails(
                     query, projection, {}, (err, data) => {
                         if (err) {
                             asyncCallback(err);
@@ -201,7 +201,7 @@ const updateServiceDetails = (serviceId, payload, credentials, callback) => {
                 || credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
                 asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
             } else {
-                Services.applicationServices.getSingleApplicationDetails(
+                Services.applicationServices.getServiceDetails(
                     query, projection, {}, (err, data) => {
                         if (err) {
                             asyncCallback(err);
@@ -258,35 +258,58 @@ const updateServiceDetails = (serviceId, payload, credentials, callback) => {
 const createNewApplicationService = (payload, credentials, callback) => {
     let registeredService = {};
     let query = {
-        developerId: payload.serviceName
+        serviceName: payload.serviceName,
+        developerId: payload.developerId
     };
     var serviceExists = false;
     const seriesTasks = {
-        task1_checkServiceExists: (asyncCallback) => {
+        task1_checkDeveloperExists: (asyncCallback) => {
+            let devQuery = {
+                _id: payload.developerId
+            };
             let projection = {
                 __v: 0
-            }
+            };
 
             // Patients and caregivers are not allowed to create services
             if (credentials.userRole == Constants.USER_ROLES.PATIENT
                 || credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
                 asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
             } else {
-                Services.applicationServices.getServiceDetails(query, projection, {}, (err, data) => {
-                    if (null != data && data._id) {
-                        if (!data.deleted) {
-                            asyncCallback(Boom.conflict(`Service ${payload.serviceName} already exists.`));
-                        } else {
-                            serviceExists = true; //soft-deleted service record found
-                            asyncCallback();
-                        }
+                Services.developerServices.getSingleDeveloper(devQuery, projection, {}, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
                     } else {
-                        asyncCallback();
+                        if (null != data && data._id && !data.deleted) {
+                            asyncCallback();
+                        } else {
+                            asyncCallback(Boom.badRequest(`Invalid developer ID`));
+                        }
                     }
                 });
             }
         },
-        task2_registerService: (asyncCallback) => {
+        task2_checkServiceExists: (asyncCallback) => {
+            let projection = {
+                __v: 0
+            }
+
+            Services.applicationServices.getServiceDetails(query, projection, {}, (err, data) => {
+                if (err) {
+                    asyncCallback(err);
+                } else if (null != data && data._id) {
+                    if (!data.deleted) {
+                        asyncCallback(Boom.conflict(`Service ${payload.serviceName} already exists.`));
+                    } else {
+                        serviceExists = true; //soft-deleted service record found
+                        asyncCallback();
+                    }
+                } else {
+                    asyncCallback();
+                }
+            });
+        },
+        task3_registerService: (asyncCallback) => {
             payload.deleted = false;
             payload.serviceRegistrationDate = Moment().utc().valueOf();
 
@@ -306,7 +329,7 @@ const createNewApplicationService = (payload, credentials, callback) => {
                 console.log(`${Moment()} Service exists. Restoring service and updating details.`)
                 Services.applicationServices.updateServiceDetails(query, payload,
                     { upsert: false }, (err, data) => {
-                        if(err) {
+                        if (err) {
                             asyncCallback(err);
                         } else {
                             registeredService = {

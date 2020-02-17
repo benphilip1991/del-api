@@ -53,7 +53,7 @@ const updateServiceDetails = (query, updateDetails, options, callback) => {
  */
 const createServiceDetails = (newService, callback) => {
 
-    console.log(`Creating new service with query : ${JSON.stringify(query)}`);
+    console.log(`Creating new service with query : ${JSON.stringify(newService)}`);
     let newServiceObj = new Models.serviceModel(newService);
     newServiceObj.save(callback);
 }

@@ -13,7 +13,9 @@ const Schema = Mongoose.Schema;
  * Developer schema definition
  */
 const developerSchema = new Schema({
-    devName: {type: String, required: true}
+    devName: { type: String, required: true },
+    deletable: { type: Boolean, required: true },
+    deleted: { type: Boolean, required: true }
 });
 
 const developerModel = Mongoose.model('DEVELOPER', developerSchema, 'developers');
