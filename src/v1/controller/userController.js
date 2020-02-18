@@ -14,6 +14,7 @@ const Constants = require('../config/constants');
 
 /**
  * POST user controller - creates one record for a new user.
+ * This API also creates a record for user applications.
  * Only admins and caregivers can use this API and by default,
  * a patient is created unless specified in the payload
  * 
@@ -110,6 +111,21 @@ const registerUser = (payload, credentials, callback) => {
                         asyncCallback();
                     }
                 })
+            }
+        },
+        task3_insertApplicationList: (asyncCallback) => {
+            if(!userExists) {
+                console.log(`Create application map for new user`)
+                Services.userApplicationServices.
+                createNewUserApplicationList(createdUser._id, (err, data) => {
+                    if(err) {
+                        asyncCallback(err);
+                    } else {
+                        asyncCallback();
+                    }
+                });
+            } else {
+                asyncCallback();
             }
         }
     }

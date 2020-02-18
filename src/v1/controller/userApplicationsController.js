@@ -69,6 +69,7 @@ const getAllUserApplications = (userId, credentials, callback) => {
                     asyncCallback(err);
                 } else {
                     userApplications = data;
+                    asyncCallback();
                 }
             })
         }

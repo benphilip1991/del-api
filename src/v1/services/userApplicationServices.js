@@ -36,10 +36,40 @@ const updateUserApplicationList = (query, updateData, options, callback) => {
     Models.userApplicationsModel.findOneAndUpdate(query, updateData, options, callback);
 }
 
+/**
+ * Permanently delete user-application mapping.
+ * Highly unlikely this function will be used
+ * @param {object} query 
+ * @param {object} options 
+ * @param {function(err, data)} callback 
+ */
+const deleteUserApplicationList = (query, options, callback) => {
+    console.log(`Permenantly deleting user application list with query : ${JSON.stringify(query)}`);
+    Models.userApplicationsModel.findOneAndDelete(query, options, callback);
+}
+
+/**
+ * Create a new map for user applications. Never called through APIs
+ * and is triggered from the user service only when a new user is created.
+ * 
+ * @param {object} newUserDetails 
+ * @param {function(err, data)} callback 
+ */
+const createNewUserApplicationList = (userId, callback) => {
+    
+    let newUserDetails = {
+        userId: userId,
+        applications: []
+    };
+    let userApplicationMap = new Models.userApplicationsModel(newUserDetails);
+    userApplicationMap.save(callback);
+}
 
 const userApplicationServices = {
     getAllUserApplications: getAllUserApplications,
-    updateUserApplicationList: updateUserApplicationList
+    updateUserApplicationList: updateUserApplicationList,
+    deleteUserApplicationList: deleteUserApplicationList,
+    createNewUserApplicationList: createNewUserApplicationList
 }
 
 module.exports = userApplicationServices;

@@ -48,42 +48,35 @@ const devProfile = {
     deleted: false
 }
 
-Services.userServices.getSingleUser({emailId: adminUser.emailId}, {}, {}, (err, data) => {
-    if(err) {
-        console.log(`Database error. Terminating app \n${err}\n`);
-        process.exit(1);
-    } else {
-        if(null == data) {
-            console.log('Creating admin.');
-            Services.userServices.createNewUser(adminUser, (err, data) => {
-                if(err) {
-                    console.log(err)
-                } else {
-                    console.log('Admin created');
-                }
-            })
+// Create default admin user.
+// In the query, $setOnInsert makes sure no changes occur if the
+// admin profile already exists
+Services.userServices.updateSingleUser({ emailId: adminUser.emailId },
+    { $setOnInsert: adminUser }, { upsert: true }, (err, data) => {
+        if (err) {
+            console.log(`Database error. Terminating app \n${err}\n`);
+            process.exit(1);
+        } else {
+            if (null == data) {
+                console.log(`Creating admin user.`)
+            }
         }
     }
-});
+);
 
 // Create default developer profile
-Services.developerServices.getSingleDeveloper({devName: devProfile.devName}, {}, {}, (err, data) => {
-    if(err) {
-        console.log(`Database error. Terminating app \n${err}\n`);
-        process.exit(1);
-    } else {
-        if(null == data) {
-            console.log('Creating default developer.');
-            Services.developerServices.createNewDeveloper(devProfile, (err, data) => {
-                if(err) {
-                    console.log(err)
-                } else {
-                    console.log('Default developer profile created');
-                }
-            })
+Services.developerServices.updateSingleDeveloper({ devName: devProfile.devName },
+    { $setOnInsert: devProfile }, { upsert: true }, (err, data) => {
+        if (err) {
+            console.log(`Database error. Terminating app \n${err}\n`);
+            process.exit(1);
+        } else {
+            if (null == data) {
+                console.log(`Creating default developer profile.`);
+            }
         }
-    } 
-});
+    }
+);
 
 // Export config data just in case one needs the info elsewhere
 module.exports = {

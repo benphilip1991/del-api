@@ -24,6 +24,6 @@ const userApplicationSchema = new Schema({
 });
 
 // Compile schema
-const userApplicationModel = Mongoose.model('USERSERVICE', userApplicationSchema, 'userservices');
+const userApplicationModel = Mongoose.model('USERAPPLICATIONS', userApplicationSchema, 'userapplications');
 
 module.exports = userApplicationModel;
