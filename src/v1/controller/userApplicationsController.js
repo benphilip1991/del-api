@@ -48,6 +48,8 @@ const getAllUserApplications = (userId, credentials, callback) => {
                     } else {
                         if (null == data) {
                             asyncCallback(Boom.notFound(`User ${userId} not found`));
+                        } else if(data.userRole != Constants.USER_ROLES.PATIENT) {
+                            asyncCallback(Boom.badRequest(`Cannot get application details for ${userId}`));
                         } else {
                             asyncCallback();
                         }
@@ -123,6 +125,8 @@ const updateUserApplication = (userId, payload, credentials, callback) => {
                     } else {
                         if (null == data) {
                             asyncCallback(Boom.notFound(`User ${userId} not found`));
+                        } else if(data.userRole != Constants.USER_ROLES.PATIENT) {
+                            asyncCallback(Boom.badRequest(`Cannot add services to ${userId}`));
                         } else {
                             asyncCallback();
                         }
