@@ -66,7 +66,6 @@ _This profile describes the default publisher of health services_
 |Key                       | Description                   | Default Value             |
 |--------------------------|-------------------------------|---------------------------|
 |`DEV_NAME`                |Default developer name. Jsut like the superuser, this profile cannot be deleted.| `del_developer`|
-|||
 
 
 __More details to come soon!__
