@@ -84,11 +84,13 @@ const updateUserApplication = {
                 userId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             },
             payload: {
-                applications: Joi.array().items(Joi.object({
-                    applicationId: Joi.string().trim().required().regex(/^[a-zA-Z0-9]+$/),
-                    addedBy: Joi.string().trim().required().regex(/^[a-zA-Z0-9]+$/),
-                    addedOn: Joi.any().forbidden()
-                }))
+                applicationId: Joi.string().trim().required().regex(/^[a-zA-Z0-9]+$/),
+                operation: Joi.string().required().equal(
+                    Constants.APP_OPERATIONS.ADD,
+                    Constants.APP_OPERATIONS.DELETE
+                ),
+                addedBy: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/),
+                addedOn: Joi.any().forbidden()
             }
         },
         plugins: {

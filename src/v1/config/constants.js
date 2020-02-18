@@ -100,6 +100,14 @@ const USER_ROLES = {
 }
 
 /**
+ * App operations
+ */
+const APP_OPERATIONS = {
+    DELETE: "delete",
+    ADD: "add"
+}
+
+/**
  * Messages
  */
 const MESSAGES = {
@@ -114,6 +122,7 @@ const CONSTANTS = {
     SWAGGER_OPTIONS: SWAGGER_OPTIONS,
     HTTP_STATUS: HTTP_STATUS,
     USER_ROLES: USER_ROLES,
+    APP_OPERATIONS: APP_OPERATIONS,
     MESSAGES: MESSAGES
 }
 

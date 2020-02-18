@@ -114,7 +114,8 @@ const registerUser = (payload, credentials, callback) => {
             }
         },
         task3_insertApplicationList: (asyncCallback) => {
-            if(!userExists) {
+            // Application list only created for patient users
+            if(!userExists && payload.userRole == Constants.USER_ROLES.PATIENT) {
                 console.log(`Create application map for new user`)
                 Services.userApplicationServices.
                 createNewUserApplicationList(createdUser._id, (err, data) => {
