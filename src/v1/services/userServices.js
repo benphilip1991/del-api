@@ -10,10 +10,10 @@ const Models = require('../models');
 
 /**
  * Get single user
- * @param {*} query 
- * @param {*} projection 
- * @param {*} options 
- * @param {*} callback 
+ * @param {object} query 
+ * @param {object} projection 
+ * @param {object} options 
+ * @param {function(err, data)} callback 
  */
 const getSingleUser = (query, projection, options, callback) => {
 
@@ -23,10 +23,10 @@ const getSingleUser = (query, projection, options, callback) => {
 
 /**
  * Get all registered users
- * @param {*} query 
- * @param {*} projection 
- * @param {*} options 
- * @param {*} callback 
+ * @param {object} query 
+ * @param {object} projection 
+ * @param {object} options 
+ * @param {function(err, data)} callback 
  */
 const getAllUsers = (query, projection, options, callback) => {
 
@@ -36,10 +36,10 @@ const getAllUsers = (query, projection, options, callback) => {
 
 /**
  * Update given user
- * @param {*} query 
- * @param {*} projection 
- * @param {*} options 
- * @param {*} callback 
+ * @param {object} query 
+ * @param {object} projection 
+ * @param {object} options 
+ * @param {function(err, data)} callback 
  */
 const updateSingleUser = (query, updateData, options, callback) => {
 
@@ -49,8 +49,8 @@ const updateSingleUser = (query, updateData, options, callback) => {
 
 /**
  * Create new user record
- * @param {*} newUser 
- * @param {*} callback 
+ * @param {object} newUser 
+ * @param {function(err, data)} callback 
  */
 const createNewUser = (newUser, callback) => {
 

@@ -14,15 +14,16 @@ const Constants = require('../config/constants');
 
 /**
  * POST user controller - creates one record for a new user.
+ * This API also creates a record for user applications.
  * Only admins and caregivers can use this API and by default,
  * a patient is created unless specified in the payload
  * 
  * Patients cannot create other accounts
  * Caregivers can only create patient accounts
  * 
- * @param {*} payload 
- * @param {*} credential
- * @param {*} callback 
+ * @param {object} payload 
+ * @param {object} credential
+ * @param {function(err, data)} callback 
  */
 const registerUser = (payload, credentials, callback) => {
     var createdUser = {};
@@ -53,7 +54,7 @@ const registerUser = (payload, credentials, callback) => {
                         //data.hasOwnProperty("_id") not working
                         if (null !== data && data._id) {
                             // if the user exists and is active, return a conflict
-                            if (!data.deleteFlag) {
+                            if (!data.deleted) {
                                 asyncCallback(Boom.conflict(`User ${payload.emailId} already exists.`));
                             } else {
                                 userExists = true;
@@ -71,8 +72,8 @@ const registerUser = (payload, credentials, callback) => {
             if (payload.password) {
                 payload.password = Utils.encryptPassword(payload.password);
             }
-            // Add additional details - creationDate, userRole and deleteFlag
-            payload.deleteFlag = false;
+            // Add additional details - creationDate, userRole and delete flag
+            payload.deleted = false;
             payload.deletable = true;
             payload.creationDate = Moment().utc().valueOf();
             if (!payload.userRole) {
@@ -111,6 +112,22 @@ const registerUser = (payload, credentials, callback) => {
                     }
                 })
             }
+        },
+        task3_insertApplicationList: (asyncCallback) => {
+            // Application list only created for patient users
+            if(!userExists && payload.userRole == Constants.USER_ROLES.PATIENT) {
+                console.log(`Create application map for new user`)
+                Services.userApplicationServices.
+                createNewUserApplicationList(createdUser._id, (err, data) => {
+                    if(err) {
+                        asyncCallback(err);
+                    } else {
+                        asyncCallback();
+                    }
+                });
+            } else {
+                asyncCallback();
+            }
         }
     }
 
@@ -125,21 +142,21 @@ const registerUser = (payload, credentials, callback) => {
 
 
 /**
- * Delete single - updates the deleteFlag for the user to true. 
+ * Delete single - updates the delete flag for the user to true. 
  * Users are not permanently deleted from the system.
  * Only deletable users are effected.
  * Patients cannot delete any account.
  * Caregivers can only delete patient accounts
  * 
- * @param {*} userId 
- * @param {*} credential
- * @param {*} callback 
+ * @param {string} userId 
+ * @param {object} credential
+ * @param {function(err, data)} callback 
  */
 const deleteSingleUser = (userId, credentials, callback) => {
     var deletedUser = {};
     let query = {
         _id: userId,
-        deleteFlag: false
+        deleted: false
     };
     const seriesTasks = {
         task1_checkUserExists: (asyncCallback) => {
@@ -177,7 +194,7 @@ const deleteSingleUser = (userId, credentials, callback) => {
         },
         task2_deleteUser: (asyncCallback) => {
             let updateData = {
-                deleteFlag: true
+                deleted: true
             }
             Services.userServices.updateSingleUser(query, updateData, { upsert: false }, (err, data) => {
                 if (err) {
@@ -205,9 +222,9 @@ const deleteSingleUser = (userId, credentials, callback) => {
  * Caregivers can only get their own or patient data.
  * Access to admin details are restricted.
  * 
- * @param {*} userId 
- * @param {*} credentials
- * @param {*} callback 
+ * @param {string} userId 
+ * @param {object} credentials
+ * @param {function(err, data)} callback 
  */
 const getSingleUser = (userId, credentials, callback) => {
     var singleUser = {};
@@ -215,12 +232,12 @@ const getSingleUser = (userId, credentials, callback) => {
         task1_getSingleUser: (asyncCallback) => {
             let query = {
                 _id: userId,
-                deleteFlag: false
+                deleted: false
             };
             let projection = {
                 __v: 0,
                 password: 0,
-                deleteFlag: 0,
+                deleted: 0,
                 deletable: 0
             };
 
@@ -239,7 +256,7 @@ const getSingleUser = (userId, credentials, callback) => {
                                 asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
                             } else {
                                 singleUser = data;
-                                asyncCallback(null, singleUser);
+                                asyncCallback();
                             }
                         }
                     }
@@ -263,8 +280,8 @@ const getSingleUser = (userId, credentials, callback) => {
  * Patients do not have access to this API.
  * Caregivers can only get other caregivers and patients.
  * 
- * @param {*} credentials
- * @param {*} callback 
+ * @param {object} credentials
+ * @param {function(err, data)} callback 
  */
 const getAllUsers = (credentials, callback) => {
     var userList = {};
@@ -274,12 +291,12 @@ const getAllUsers = (credentials, callback) => {
                 asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
             } else {
                 let query = {
-                    deleteFlag: false
+                    deleted: false
                 }
                 let projection = {
                     __v: 0,
                     password: 0,
-                    deleteFlag: 0,
+                    deleted: 0,
                     deletable: 0
                 };
 

@@ -1,13 +1,21 @@
 /**
+ * API routes
  * 
  * @author Ben Philip
  */
 
- 'use strict';
+'use strict';
 
- const userRoutes = require('./userRoutes');
- const authRoutes = require('./authRoutes');
+const userRoutes = require('./userRoutes');
+const authRoutes = require('./authRoutes');
+const applicationRoutes = require('./applicationRoutes');
+const userApplicationRoutes = require('./userApplicationRoutes');
 
- var apiRoutes = [].concat(userRoutes, authRoutes);
+var apiRoutes = [].concat(
+    userRoutes,
+    authRoutes,
+    applicationRoutes,
+    userApplicationRoutes
+);
 
- module.exports = apiRoutes;
+module.exports = apiRoutes;

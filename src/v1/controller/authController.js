@@ -11,14 +11,13 @@ const Boom = require('@hapi/boom');
 const Moment = require('moment');
 const Utils = require('../utils');
 const Services = require('../services');
-const Constants = require('../config/constants');
 
 /**
  * Controller to validate users, generate and return
  * JWT tokens.
  * 
- * @param {*} payload 
- * @param {*} callback 
+ * @param {object} payload 
+ * @param {function(err, data)} callback 
  */
 const generateToken = (payload, callback) => {
     var token = {};

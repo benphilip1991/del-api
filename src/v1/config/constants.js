@@ -18,8 +18,8 @@ const SERVER = {
 
 const JWT_SECRETS = {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
-    JWT_ALGORITHM: process.env.JWT_ALGORITHM,
-    JWT_DEFAULT_EXPIRY: process.env.JWT_DEFAULT_EXPIRY
+    JWT_ALGORITHM: process.env.JWT_ALGORITHM || 'HS256',
+    JWT_DEFAULT_EXPIRY: process.env.JWT_DEFAULT_EXPIRY || '1d'
 }
 
 const AUTH_CONFIG = {
@@ -33,6 +33,13 @@ const SWAGGER_OPTIONS = {
     info: {
         'title': 'DEL API Documentation',
         'version': '0.0.1'
+    },
+    securityDefinitions: {
+        'auth_token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header'
+        }
     },
     documentationPath: '/docs',
     grouping: 'tags'
@@ -88,14 +95,24 @@ const HTTP_STATUS = {
 const USER_ROLES = {
     ADMIN: "admin",
     PATIENT: "patient",
-    CAREGIVER: "caregiver"
+    CAREGIVER: "caregiver",
+    DEVELOPER: "developer"
+}
+
+/**
+ * App operations
+ */
+const APP_OPERATIONS = {
+    DELETE: "delete",
+    ADD: "add"
 }
 
 /**
  * Messages
  */
 const MESSAGES = {
-    ACTION_NOT_PERMITTED: "User action not permitted"
+    ACTION_NOT_PERMITTED: "User action not permitted",
+    BAD_PARAMETER: "Bad request parameter!"
 }
 
 const CONSTANTS = {
@@ -105,6 +122,7 @@ const CONSTANTS = {
     SWAGGER_OPTIONS: SWAGGER_OPTIONS,
     HTTP_STATUS: HTTP_STATUS,
     USER_ROLES: USER_ROLES,
+    APP_OPERATIONS: APP_OPERATIONS,
     MESSAGES: MESSAGES
 }
 

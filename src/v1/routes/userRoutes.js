@@ -6,6 +6,7 @@
 'use strict';
 
 const Joi = require('@hapi/joi');
+const Boom = require('@hapi/boom');
 const Moment = require('moment');
 const Mongoose = require('mongoose');
 const Controller = require('../controller');
@@ -26,8 +27,16 @@ const getUser = {
         description: 'Get single user details',
         tags: ['api', 'user'],
         validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true }),
             params: {
                 userId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
+            }
+        },
+        plugins: {
+            'hapi-swagger': {
+                security: [{ 'auth_token': {} }]
             }
         }
     },
@@ -37,16 +46,8 @@ const getUser = {
 
         // Verify if userId is an objectId, else reject
         if (!Mongoose.Types.ObjectId.isValid(request.params.userId)) {
-            console.log('[INFO]', `${Moment()} --> Invalid UserId`)
-
-            var statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST.statusCode;
-            var response = {
-                message: "Invalid user ID"
-            }
-            var errorResponse = h.response(response);
-            errorResponse.code(statusCode);
-            errorResponse.header('Content-Type', 'application/json');
-            return errorResponse;
+            console.log('[INFO]', `${Moment()} --> Invalid userId`)
+            return Boom.badRequest(Constants.MESSAGES.BAD_PARAMETER);
         }
 
         // Return user details
@@ -80,7 +81,17 @@ const getAllUsers = {
     config: {
         auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
         description: 'Get all user records',
-        tags: ['api', 'user']
+        tags: ['api', 'user'],
+        validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true })
+        },
+        plugins: {
+            'hapi-swagger': {
+                security: [{ 'auth_token': {} }]
+            }
+        }
     },
     handler: (request, h) => {
 
@@ -120,6 +131,9 @@ const registerUser = {
         description: "Register new user",
         tags: ['api', 'user'],
         validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true }),
             payload: {
                 firstName: Joi.string().required().trim().regex(/^[a-zA-Z ]+$/),
                 lastName: Joi.string().required().trim().regex(/^[a-zA-Z ]+$/),
@@ -130,11 +144,17 @@ const registerUser = {
                 userRole: Joi.string().equal(
                     Constants.USER_ROLES.ADMIN,
                     Constants.USER_ROLES.CAREGIVER,
-                    Constants.USER_ROLES.PATIENT
+                    Constants.USER_ROLES.PATIENT,
+                    Constants.USER_ROLES.DEVELOPER
                 ),
                 creationDate: Joi.any().forbidden(),
-                deleteFlag: Joi.any().forbidden(),
+                deleted: Joi.any().forbidden(),
                 deletable: Joi.any().forbidden()
+            }
+        },
+        plugins: {
+            'hapi-swagger': {
+                security: [{ 'auth_token': {} }]
             }
         }
     },
@@ -169,11 +189,19 @@ const deleteSingleUser = {
     path: '/api/v1/user/{userId}',
     config: {
         auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
-        description: 'Delete existing user - soft deletion of user record',
+        description: 'Delete existing user',
         tags: ['api', 'user'],
         validate: {
+            headers: Joi.object({
+                authorization: Joi.string()
+            }).options({ allowUnknown: true }),
             params: {
                 userId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
+            }
+        },
+        plugins: {
+            'hapi-swagger': {
+                security: [{ 'auth_token': {} }]
             }
         }
     },
@@ -184,15 +212,7 @@ const deleteSingleUser = {
         // Verify if userId is an objectId, else reject
         if (!Mongoose.Types.ObjectId.isValid(request.params.userId)) {
             console.log('[INFO]', `${Moment()} --> Invalid UserId`)
-
-            var statusCode = Constants.HTTP_STATUS.CLIENT_ERROR.BAD_REQUEST.statusCode;
-            var response = {
-                message: "Invalid user ID"
-            }
-            var errorResponse = h.response(response);
-            errorResponse.code(statusCode);
-            errorResponse.header('Content-Type', 'application/json');
-            return errorResponse;
+            return Boom.badRequest(Constants.MESSAGES.BAD_PARAMETER);
         }
 
         // Delete user and return status
