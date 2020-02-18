@@ -244,6 +244,7 @@ const updateApplicationDetails = {
                 applicationId: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/)
             },
             payload: {
+                developerId: Joi.any().forbidden(),
                 applicationName: Joi.string().trim().regex(/^[a-zA-Z0-9]+$/),
                 applicationDescription: Joi.string().trim().regex(/^[a-zA-Z0-9 ]+$/),
                 applicationUrl: Joi.string().trim(),
