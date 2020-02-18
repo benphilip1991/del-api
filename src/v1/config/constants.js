@@ -18,8 +18,8 @@ const SERVER = {
 
 const JWT_SECRETS = {
     JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
-    JWT_ALGORITHM: process.env.JWT_ALGORITHM,
-    JWT_DEFAULT_EXPIRY: process.env.JWT_DEFAULT_EXPIRY
+    JWT_ALGORITHM: process.env.JWT_ALGORITHM || 'HS256',
+    JWT_DEFAULT_EXPIRY: process.env.JWT_DEFAULT_EXPIRY || '1d'
 }
 
 const AUTH_CONFIG = {

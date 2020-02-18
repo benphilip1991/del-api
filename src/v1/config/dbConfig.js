@@ -29,21 +29,23 @@ try {
 }
 
 // Create admin and developer profiles
+let adminPassword = process.env.SU_PASSWORD || '@dminpassword!';
+
 const adminUser = {
-    firstName: process.env.SU_FIRSTNAME,
-    lastName: process.env.SU_LASTNAME,
-    emailId: process.env.SU_EMAILID,
-    password: Utils.DelUtils.encryptPassword(process.env.SU_PASSWORD),
-    age: process.env.SU_AGE,
-    sex: process.env.SU_SEX,
-    userRole: process.env.SU_USERROLE,
+    firstName: process.env.SU_FIRSTNAME || 'admin',
+    lastName: process.env.SU_LASTNAME || 'admin',
+    emailId: process.env.SU_EMAILID || 'admin@mail.com',
+    password: Utils.DelUtils.encryptPassword(adminPassword),
+    age: process.env.SU_AGE || 40,
+    sex: process.env.SU_SEX || 'Male',
+    userRole: process.env.SU_USERROLE || 'admin',
     deleted: false,
     deletable: false,
     creationDate: Moment().utc().valueOf()
 }
 
 const devProfile = {
-    devName: process.env.DEV_NAME,
+    devName: process.env.DEV_NAME || 'del_developer',
     deletable: false,
     deleted: false
 }
