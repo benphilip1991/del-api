@@ -5,7 +5,7 @@ _This service is still under development and features are constantly being added
 ## Table of Contents
 1. [About](#about)
 2. [Installation and Running](#installation-and-running)
-3. [Environmental Variables](#environmental-variables)
+3. [Environment Variables](#environment-variables)
 
 ## About
 The Digital Enhanced Living (DEL) api (del-api) service is the management module for the DEL platform and handles user profiles, application details and tracks linked services and user activities on the container application. The service will be expanded to add more features including health metric tracking and mHealth profiles for remote health management by caregivers.  
@@ -28,7 +28,7 @@ $ npm run dev_local
 ```
 Once running, the api documentation can be viewed through the SwaggerUI at `{host}:{port}/docs`  
 
-## Environmental Variables
+## Environment Variables
 The del-api service requires several environmental variables to define runtime settings as well as parameters for default service profiles. These can be exported to the bash environment OR stored in a `.env` file as key-value pairs such as: 
 ```
 PORT=3000
