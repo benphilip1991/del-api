@@ -47,4 +47,32 @@ const generateAuthToken = {
     }
 }
 
-module.exports = [generateAuthToken];
+/**
+ * Return token details - userId as well as role
+ * The API will only return 200 if the token is valid.
+ * Else, 401. This API can also be used for logging in
+ * No controller interaction is performed here as validation
+ * is done earlier. We only reach the return statement if the
+ * token is valid and we have the unwrapped token header contents.
+ */
+const verifyAuthToken = {
+    method: 'GET',
+    path: '/api/v1/auth',
+    config: {
+        auth: Constants.AUTH_CONFIG.AUTH_STRATEGY,
+        description: 'Verify token and return owner\'s details',
+        tags: ['api', 'auth'],
+        validate: {
+            headers: Joi.object({
+                authorization: Joi.string().trim().required()
+            }).options({ allowUnknown: true })
+        }
+    },
+    handler: (request, h) => {
+        console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
+        var statusCode = Constants.HTTP_STATUS.SUCCESS.OK.statusCode;
+        return h.response(request.auth.credentials).code(statusCode).header('Content-Type', 'application/json');
+    }
+}
+
+module.exports = [generateAuthToken, verifyAuthToken];
