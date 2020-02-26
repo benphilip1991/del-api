@@ -146,6 +146,7 @@ const getAllUserApplications = (userId, credentials, callback) => {
  */
 const updateUserApplication = (userId, payload, credentials, callback) => {
     var userApplications = {};
+    var responseObj = {};
     const seriesTasks = {
         task1_checkUserExists: (asyncCallback) => {
             let userQuery = {
@@ -262,6 +263,50 @@ const updateUserApplication = (userId, payload, credentials, callback) => {
                     asyncCallback();
                 }
             });
+        },
+        task5_getApplicationNameAndUrl: (asyncCallback) => {
+            let projection = {
+                __v: 0,
+            }
+            let query = {
+                $or: []
+            };
+
+            var applications = [];
+
+            // Extract application Ids for query
+            userApplications.applications.forEach((application) => {
+                query.$or.push({ _id: application.applicationId })
+            });
+
+            Services.applicationServices.getAllApplicationsDetails(query, projection, {}, (err, data) => {
+                if (err) {
+                    asyncCallback(err);
+                } else {
+                    if (null != data) {
+                        // Iterate through user apps list and add app details to array
+                        userApplications.applications.forEach((application) => {
+                            var idx = data.findIndex((appDetails) => {
+                                return (appDetails._id == application.applicationId)
+                            });
+
+                            var newApplication = {
+                                applicationId: application.applicationId,
+                                addedBy: application.addedBy,
+                                addedOn: application.addedOn,
+                                applicationName: data[idx].applicationName,
+                                applicationUrl: data[idx].applicationUrl
+                            };
+
+                            applications.push(newApplication);
+                        });
+
+                        responseObj.applications = applications;
+                        responseObj.userId = userApplications.userId
+                        asyncCallback();
+                    }
+                }
+            });
         }
     }
 
@@ -270,7 +315,7 @@ const updateUserApplication = (userId, payload, credentials, callback) => {
         if (err) {
             callback(err);
         } else {
-            callback(null, userApplications)
+            callback(null, responseObj)
         }
     });
 }
