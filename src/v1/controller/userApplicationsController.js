@@ -279,6 +279,11 @@ const updateUserApplication = (userId, payload, credentials, callback) => {
                 query.$or.push({ _id: application.applicationId })
             });
 
+            // Fixing an issue throwing an error in case the user deletes all apps
+            if(query.$or.length == 0) {
+                query = {}
+            }
+
             Services.applicationServices.getAllApplicationsDetails(query, projection, {}, (err, data) => {
                 if (err) {
                     asyncCallback(err);
