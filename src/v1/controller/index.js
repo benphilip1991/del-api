@@ -9,5 +9,6 @@ module.exports = {
     UserController: require('./userController'),
     AuthController: require('./authController'),
     ApplicationController: require('./applicationController'),
-    UserApplicationController: require('./userApplicationsController')
+    UserApplicationController: require('./userApplicationsController'),
+    BotkitBaseController: require('./botkitBaseController')
 }
