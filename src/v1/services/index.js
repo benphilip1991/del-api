@@ -9,5 +9,6 @@ module.exports = {
     developerServices: require('./developerServices'),
     userAuthServices: require('./userAuthServices'),
     applicationServices: require('./applicationServices'),
-    userApplicationServices: require('./userApplicationServices')
+    userApplicationServices: require('./userApplicationServices'),
+    getMessage: require('./watsonService')
 }

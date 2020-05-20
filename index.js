@@ -15,6 +15,21 @@ const AuthToken = require('hapi-auth-bearer-token');
 const Routes = require('./src/v1/routes');
 const config = require('./src/v1/config');
 const AuthUtils = require('./src/v1/utils/authUtils');
+const Botkit = require('botkit');
+
+const bot_options = {
+    replyWithTyping: false,
+};
+
+// Use a mongo database if specified, otherwise store in a JSON file local to the app.
+// Mongo is automatically configured when deploying to Heroku
+if (process.env.MONGO_URI) {
+    // create a custom db access method
+    var db = require(__dirname + '/components/database.js')({});
+    bot_options.storage = db;
+  } else {
+      bot_options.json_file_store = __dirname + '/.data/db/'; // store user data in a simple JSON format
+  }
 
 // Create server instance
 const serverInit = async () => {
@@ -25,6 +40,8 @@ const serverInit = async () => {
         port: config.CONSTANTS.SERVER.PORT,
         host: config.CONSTANTS.SERVER.HOST
     });
+
+    var listener = server.listener;
 
     // Register plugins
     await server.register([
@@ -55,12 +72,22 @@ const serverInit = async () => {
     // Register validator
     server.validator(Joi);
 
+    // Create the Botkit controller, which controls all instances of the bot.
+    var controller = Botkit.socketbot(bot_options);
+   
+
+    var normalizedPath = require("path").join(__dirname, "./src/v1/skills");
+    require("fs").readdirSync(normalizedPath).forEach(function(file) {
+    require("./src/v1/skills/" + file)(controller);
+    });
+
+    console.log('Chatbot is online on port: ' + (process.env.PORT || 3000))
+
     // Default route
     server.route({
         method: 'GET',
         path: '/',
         handler: (request, h) => {
-
             // Redirect request to swagger
             return h.redirect('/docs');
         }
@@ -70,6 +97,8 @@ const serverInit = async () => {
     server.route(Routes);
 
     console.log(`Starting DEL service on : ${server.info.uri}`);
+    controller.openSocketServer(listener); //open websocket server.
+    controller.startTicking();
     await server.start(() => {
         console.log('info', `Started DEL service on : ${server.info.uri}`);
     });

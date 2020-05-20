@@ -10,5 +10,4 @@ module.exports = {
     AuthController: require('./authController'),
     ApplicationController: require('./applicationController'),
     UserApplicationController: require('./userApplicationsController'),
-    BotkitBaseController: require('./botkitBaseController')
 }
