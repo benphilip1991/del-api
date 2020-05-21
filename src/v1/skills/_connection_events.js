@@ -26,7 +26,12 @@ module.exports = function(controller) {
         watsonResponse = await getMessage(message.text);
         console.log("Watson Replied: ")
         console.log(watsonResponse.result)
-        bot.reply(message, watsonResponse.result.output.text.join('\n'))
+        if(watsonResponse.result.intents[0]) {
+          bot.reply(message, watsonResponse.result.intents[0].intent)
         }
+        else {
+          bot.reply(message, watsonResponse.result.output.text.join('\n'))
+        }
+      }
     );
 }
