@@ -97,8 +97,10 @@ const serverInit = async () => {
     server.route(Routes);
 
     console.log(`Starting DEL service on : ${server.info.uri}`);
+    
     controller.openSocketServer(listener); //open websocket server.
     controller.startTicking();
+    
     await server.start(() => {
         console.log('info', `Started DEL service on : ${server.info.uri}`);
     });
