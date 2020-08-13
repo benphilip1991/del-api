@@ -115,6 +115,10 @@ const MESSAGES = {
     BAD_PARAMETER: "Bad request parameter!"
 }
 
+const APP_STORAGE = {
+    'PATH': './applications/'
+}
+
 const CONSTANTS = {
     SERVER: SERVER,
     JWT_SECRETS: JWT_SECRETS,
@@ -123,7 +127,8 @@ const CONSTANTS = {
     HTTP_STATUS: HTTP_STATUS,
     USER_ROLES: USER_ROLES,
     APP_OPERATIONS: APP_OPERATIONS,
-    MESSAGES: MESSAGES
+    MESSAGES: MESSAGES,
+    'APP_STORAGE': APP_STORAGE
 }
 
 module.exports = CONSTANTS;

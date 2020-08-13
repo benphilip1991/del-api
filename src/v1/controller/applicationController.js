@@ -11,6 +11,7 @@ const async = require('async');
 const Boom = require('@hapi/boom');
 const Moment = require('moment');
 const Services = require('../services');
+const Utils = require('../utils/delUtils');
 const Constants = require('../config/constants');
 
 /**
@@ -261,6 +262,7 @@ const createNewApplication = (payload, credentials, callback) => {
         developerId: payload.developerId
     };
     var applicationExists = false;
+    var applicationId;
     const seriesTasks = {
         task1_checkDeveloperExists: (asyncCallback) => {
             let devQuery = {
@@ -320,6 +322,10 @@ const createNewApplication = (payload, credentials, callback) => {
                         registeredApplication = {
                             _id: data._id,
                             applicationName: data.applicationName
+                        }
+                        //Create application folder
+                        if(data.id != null){
+                            Utils.createFolder(Constants.APP_STORAGE.PATH, data.id);
                         }
                         asyncCallback();
                     }
