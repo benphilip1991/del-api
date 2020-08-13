@@ -295,12 +295,60 @@ const updateApplicationDetails = {
     }
 }
 
+/**
+ * Load an application web resource
+ */
+const loadApplication = {
+    method: 'GET',
+    path: '/api/v1/application/package/{applicationId}/{applicationUrl}',
+    config: {
+        description: 'Load an application resource html',
+        tags: ['api', 'application'],
+        validate: {
+            params: {
+                applicationId: Joi.string().required().trim().regex(/^[a-zA-Z0-9]+$/),
+                applicationUrl: Joi.string().required().trim()
+            }
+        },
+    },
+    handler: (request, h) => {
+        console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
+        return h.file(Constants.APP_STORAGE.PATH + request.params.applicationId + '/' 
+            + request.params.applicationUrl + '.html');
+    }
+}
+
+/**
+ * Load an application icon
+ */
+const loadApplicationIcon = {
+    method: 'GET',
+    path: '/api/v1/application/package/{applicationId}/{applicationUrl}/icon',
+    config: {
+        description: 'Load an application resource icon',
+        tags: ['api', 'application'],
+        validate: {
+            params: {
+                applicationId: Joi.string().required().trim().regex(/^[a-zA-Z0-9]+$/),
+                applicationUrl: Joi.string().required().trim()
+            }
+        },
+    },
+    handler: (request, h) => {
+        console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
+        return h.file(Constants.APP_STORAGE.PATH + request.params.applicationId + '/' 
+            + request.params.applicationUrl + '.png');
+    }
+}
+
 const applicationRoutes = [
     getApplication,
     getAllApplications,
     deleteApplication,
     registerNewApplication,
-    updateApplicationDetails
+    updateApplicationDetails,
+    loadApplication,
+    loadApplicationIcon
 ]
 
 module.exports = applicationRoutes;

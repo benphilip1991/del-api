@@ -8,6 +8,7 @@
 const Boom = require('@hapi/boom');
 const Moment = require('moment');
 const BCrypt = require('bcrypt');
+const fs = require('fs');
 const Constants = require('../config/constants');
 
 const returnError = (data) => {
@@ -79,11 +80,23 @@ const buildSuccessResponse = (message, data) => {
     }
 }
 
+/**
+ * Create folder with specified name at specified path
+ * @param {String} path 
+ * @param {String} name 
+ */
+ const createFolder = (path, name) => {
+    if (!fs.existsSync(path + name)){
+        fs.mkdirSync(path + name, {recursive: true});
+    }
+ }
+
 module.exports = {
     returnError: returnError,
     encryptPassword: encryptPassword,
     verifyPassword: verifyPassword,
     buildErrorResponse: buildErrorResponse,
     buildUnauthorizedResponse: buildUnauthorizedResponse,
-    buildSuccessResponse: buildSuccessResponse
+    buildSuccessResponse: buildSuccessResponse,
+    createFolder: createFolder
 }
