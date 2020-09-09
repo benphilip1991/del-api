@@ -187,6 +187,9 @@ const registerNewApplication = {
                         description: Joi.string().required().trim()
                     })).allow(null)
                 }).allow(null),
+                applicationPermissions: Joi.object({
+                    accessPermissions: Joi.array().items(Joi.string()).allow(null)
+                }).allow(null),
                 applicationRegistrationDate: Joi.any().forbidden(),
                 deleted: Joi.any().forbidden()
             }
