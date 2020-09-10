@@ -22,6 +22,11 @@ const applicationSchema = new Schema({
             }
         ]
     },
+    applicationPermissions: {
+        accessPermissions: [ 
+            { type: String }
+        ] 
+    },
     deleted: { type: Boolean, require: true }
 });
 

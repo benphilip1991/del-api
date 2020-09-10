@@ -112,7 +112,8 @@ const getAllUserApplications = (userId, credentials, callback) => {
                                 addedBy: application.addedBy,
                                 addedOn: application.addedOn,
                                 applicationName: data[idx].applicationName,
-                                applicationUrl: data[idx].applicationUrl
+                                applicationUrl: data[idx].applicationUrl,
+                                applicationPermissions: data[idx].applicationPermissions
                             };
 
                             applications.push(newApplication);
