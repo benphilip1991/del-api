@@ -11,14 +11,22 @@ const Services = require('../services');
 
 const Utils = require('../utils');
 
+const dbMeta = {
+    dbHost: process.env.DB_HOST || 'localhost',
+    dbPort: process.env.DB_PORT || '27017',
+    dbDatabase: process.env.DB_DATABASE || 'del_api',
+}
+
 const database = {
-    dbUri: process.env.DB_URI 
-        || `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`,
-    port: process.env.DB_PORT || '27017'
+    dbHost: dbMeta.dbHost,
+    dbPort: dbMeta.dbPort,
+    dbDatabase: dbMeta.dbDatabase,
+    dbUri: process.env.DB_URI || `mongodb://${dbMeta.dbHost}:${dbMeta.dbPort}/${dbMeta.dbDatabase}`
 }
 
 // Establish db connection
 try {
+    console.log(`DB URI : ${database.dbUri}`)
     Mongoose.connect(database.dbUri, {
         useNewUrlParser: true,
         //useUnifiedTopology: true  // commented out as this crashes on docker

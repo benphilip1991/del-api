@@ -2,6 +2,14 @@
 PORT=3050
 HOST=0.0.0.0
 
+# Database constants
+DB_ADAPTER=mongodb
+DB_DATABASE=del_api_dev
+DB_USERNAME=del_dev
+DB_PASSWORD=verysecret
+DB_HOST=mongo_del
+DB_PORT=27017
+
 # Example JWT Keys
 # Change the values before deploying
 JWT_SECRET_KEY="Wd2n2/TeVL7AEMjdRzXXaLg8ACFRJjs7kP4CA+YPl2mZ8y7Ca5I66jS6OLzCy0WH"
@@ -25,6 +33,6 @@ SU_USERROLE="admin"
 DEV_NAME="del_developer"
 
 # Watson workspace, URL and API key
-ASSISTANT_WORKSPACE_ID='<Workspace ID>'
+ASSISTANT_WORKSPACE_ID='<workspace id>'
 ASSISTANT_URL='https://api.au-syd.assistant.watson.cloud.ibm.com/'
-ASSISTANT_IAM_APIKEY='<API_KEY>'
+ASSISTANT_IAM_APIKEY='<API Key>'
