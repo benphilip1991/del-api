@@ -12,15 +12,16 @@ const Services = require('../services');
 const Utils = require('../utils');
 
 const database = {
-    dbUri: process.env.DB_URI || 'mongodb://localhost/del',
-    port: 27017
+    dbUri: process.env.DB_URI 
+        || `mongodb://${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_DATABASE}`,
+    port: process.env.DB_PORT || '27017'
 }
 
 // Establish db connection
 try {
     Mongoose.connect(database.dbUri, {
         useNewUrlParser: true,
-        useUnifiedTopology: true
+        //useUnifiedTopology: true  // commented out as this crashes on docker
     });
 
 } catch (error) {
