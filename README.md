@@ -28,6 +28,32 @@ $ npm run dev_local
 ```
 Once running, the api documentation can be viewed through the SwaggerUI at `{host}:{port}/docs`  
 
+## Docker
+The application has also been dockerized to simplify deployment and can also be launched using docker-compose.
+This may be useful for quick deployments where you want to avoid local package installation. However, the app image must be built prior to deployment using the command:
+```bash
+$ docker build -t del/del-api .
+```
+Run the following to launch the application:
+```bash
+$ docker-compose up -d
+```
+The containers can be shut down using:
+```bash
+$ docker-compose down
+```
+If the app image is build several times, it may occupy a lot of system storage. In that case, you can delete the app images and reclaim memory.
+Please note that the following commands remove all images, containers and volumes. If other images are present on the system, these can be removed individually.
+For more details, please refer to the [__docker reference documentation__](https://docs.docker.com/reference/).
+```bash
+$ docker image rmi $(docker images -a -q)
+$ docker volume prune
+$ docker system prune
+```
+
+_Please ensure that you have installed the docker engine and docker-compose before running the above._
+_Note that if you are making changes to the code, the app image will have to be build each time to run the latest updates._
+
 ## Environment Variables
 The del-api service requires several environmental variables to define runtime settings as well as parameters for default service profiles. These can be exported to the bash environment OR stored in a `.env` file as key-value pairs such as: 
 ```
@@ -41,6 +67,13 @@ __Host parameters__
 |--------------------------|-------------------------------|---------------------------|
 |`HOST`                    |Application hostname           |`localhost`|
 |`PORT`                    |Application port number        |`3000`|
+
+__Database parameters__
+|Key                       | Description                   | Default Value             |
+|--------------------------|-------------------------------|---------------------------|
+|`DB_DATABASE`             |The application database. This value should be changed to mongo_del for docker deployments |`del_api`|
+|`DB_HOST`                 |The database hostname. This value should be modified in the .env file for docker deployments |`localhost`|
+|`DB_PORT`                 |The database port |`27017`|
 
 __Authentication parameters__
 |Key                       | Description                   | Default Value             |

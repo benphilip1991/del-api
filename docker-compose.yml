@@ -2,7 +2,7 @@ version: "3"
 services:
     app:
         container_name: del-api
-        image: bephilip/del-api
+        image: del/del-api
         restart: always
         environment: 
             - NODE_ENV=development
