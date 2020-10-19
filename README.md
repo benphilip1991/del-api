@@ -52,7 +52,7 @@ $ docker system prune
 ```
 
 _Please ensure that you have installed the docker engine and docker-compose before running the above._
-_Note that if you are making changes to the code, the app image will have to be build each time to run the latest updates._
+_Note that if you are making changes to the code, the app image will have to be built each time to run the latest updates._
 
 ## Environment Variables
 The del-api service requires several environmental variables to define runtime settings as well as parameters for default service profiles. These can be exported to the bash environment OR stored in a `.env` file as key-value pairs such as: 
