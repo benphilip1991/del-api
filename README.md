@@ -5,7 +5,8 @@ _This service is still under development and features are constantly being added
 ## Table of Contents
 1. [About](#about)
 2. [Installation and Running](#installation-and-running)
-3. [Environment Variables](#environment-variables)
+3. [Docker](#docker)
+4. [Environment Variables](#environment-variables)
 
 ## About
 The Digital Enhanced Living (DEL) api (del-api) service is the management module for the DEL platform and handles user profiles, application details and tracks linked services and user activities on the container application. The service will be expanded to add more features including health metric tracking and mHealth profiles for remote health management by caregivers.  
