@@ -30,8 +30,6 @@ async function getDelBotResponse(userMessage, sessionId, projectId = 'del-bot') 
     // Send request and print result
     const responses = await sessionClient.detectIntent(request);
 
-    // console.log(`\n\nRaw response : ${JSON.stringify(responses[0].queryResult, null, 4)}\n\n`)
-
     const action = responses[0].queryResult.action;
     const botResponse = responses[0].queryResult.fulfillmentText;
     const botParams = responses[0].queryResult.parameters.fields;
