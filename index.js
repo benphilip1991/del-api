@@ -17,8 +17,8 @@ const config = require('./src/v1/config');
 const AuthUtils = require('./src/v1/utils/authUtils');
 const Botkit = require('botkit');
 
-const bot_options = {
-    replyWithTyping: false,
+const botOptions = {
+    replyWithTyping: false
 };
 
 // Use a mongo database if specified, otherwise store in a JSON file local to the app.
@@ -26,9 +26,9 @@ const bot_options = {
 if (process.env.MONGO_URI) {
     // create a custom db access method
     var db = require(__dirname + '/components/database.js')({});
-    bot_options.storage = db;
+    botOptions.storage = db;
   } else {
-      bot_options.json_file_store = __dirname + '/.data/db/'; // store user data in a simple JSON format
+      botOptions.json_file_store = __dirname + '/.data/db/'; // store user data in a simple JSON format
   }
 
 // Create server instance
@@ -73,14 +73,11 @@ const serverInit = async () => {
     server.validator(Joi);
 
     // Create the Botkit controller, which controls all instances of the bot.
-    var controller = Botkit.socketbot(bot_options);
-   
-
+    var botkitController = Botkit.socketbot(botOptions);
     var normalizedPath = require("path").join(__dirname, "./src/v1/skills");
     require("fs").readdirSync(normalizedPath).forEach(function(file) {
-    require("./src/v1/skills/" + file)(controller);
+        require("./src/v1/skills/" + file)(botkitController);
     });
-
     console.log('Chatbot is online on port: ' + (process.env.PORT || 3000))
 
     // Default route
@@ -95,11 +92,10 @@ const serverInit = async () => {
 
     // Register routes in ./src/v1/routes
     server.route(Routes);
-
     console.log(`Starting DEL service on : ${server.info.uri}`);
-    
-    controller.openSocketServer(listener); //open websocket server.
-    controller.startTicking();
+
+    botkitController.openSocketServer(listener); //open websocket server.
+    botkitController.startTicking();
     
     await server.start(() => {
         console.log('info', `Started DEL service on : ${server.info.uri}`);
