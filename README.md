@@ -102,7 +102,7 @@ _This profile describes the default publisher of health services_
 |`DEV_NAME`                |Default developer name. Jsut like the superuser, this profile cannot be deleted.| `del_developer`|
 
 
-__Dialogflow Integration__
+__Dialogflow Integration__  
 _This service provides a chatbot based on Dialogflow and requires the Google project id and the authentication key_
 |Key                                   | Description                   | Default Value             |
 |--------------------------------------|-------------------------------|---------------------------|
