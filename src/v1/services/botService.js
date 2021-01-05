@@ -6,7 +6,7 @@ const dialogflow = require('@google-cloud/dialogflow');
  * @param {*} sessionId 
  * @param {*} projectId 
  */
-async function getDelBotResponse(userMessage, sessionId, projectId = 'del-bot') {
+async function getDelBotResponse(userMessage, sessionId, projectId) {
     
     // Create new session
     const sessionClient = new dialogflow.SessionsClient();

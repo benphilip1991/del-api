@@ -42,7 +42,7 @@ module.exports = function (controller) {
     console.log(`SessionId : ${sessionId}`)
 
     console.log("Client is sending: ", message.text)
-    botResponse = await getDelBotResponse(message.text, sessionId);
+    botResponse = await getDelBotResponse(message.text, sessionId, process.env.DIALOGFLOW_PROJECT_ID);
     console.log(`Del Bot response : ${JSON.stringify(botResponse, null, 4)}`)
 
     // App needs to handle response object

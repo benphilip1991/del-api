@@ -32,7 +32,6 @@ SU_USERROLE="admin"
 # Default developer details
 DEV_NAME="del_developer"
 
-# Watson workspace, URL and API key
-ASSISTANT_WORKSPACE_ID='<workspace id>'
-ASSISTANT_URL='https://api.au-syd.assistant.watson.cloud.ibm.com/'
-ASSISTANT_IAM_APIKEY='<API Key>'
+# Dialogflow
+DIALOGFLOW_PROJECT_ID='<project id>'
+GOOGLE_APPLICATION_CREDENTIALS='<dialogflow_auth.json>'

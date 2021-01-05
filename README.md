@@ -43,8 +43,8 @@ The containers can be shut down using:
 ```bash
 $ docker-compose down
 ```
-If the app image is build several times, it may occupy a lot of system storage. In that case, you can delete the app images and reclaim memory.
-Please note that the following commands remove all images, containers and volumes. If other images are present on the system, these can be removed individually.
+If the app image is built several times, it may occupy a significant amount of system storage. In that case, you may delete the app images and reclaim memory.
+Please note that the following commands remove all images, containers and volumes. If other images are present on the system, the del-api images should be removed individually to avoid deleting other images.
 For more details, please refer to the [__docker reference documentation__](https://docs.docker.com/reference/).
 ```bash
 $ docker image rmi $(docker images -a -q)
@@ -100,6 +100,14 @@ _This profile describes the default publisher of health services_
 |Key                       | Description                   | Default Value             |
 |--------------------------|-------------------------------|---------------------------|
 |`DEV_NAME`                |Default developer name. Jsut like the superuser, this profile cannot be deleted.| `del_developer`|
+
+
+__Dialogflow Integration__
+_This service provides a chatbot based on Dialogflow and requires the Google project id and the authentication key_
+|Key                                   | Description                   | Default Value             |
+|--------------------------------------|-------------------------------|---------------------------|
+|`DIALOGFLOW_PROJECT_ID`               |The dialogflow project id      | `none`                    |
+|`GOOGLE_APPLICATION_CREDENTIALS`      |Google application credentials | `none`                    |
 
 
 __More details to come soon!__
