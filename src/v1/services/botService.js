@@ -1,7 +1,5 @@
 const dialogflow = require('@google-cloud/dialogflow');
 
-// Authentication not working through app, but works if credentials are exported on the console
-// export GOOGLE_APPLICATION_CREDENTIALS='/Users/benjo/Desktop/DialogFlowTest/del-bot-creds.json'
 /**
  * Returns an object containing the response, action and parameters
  * @param {*} userMessage 
@@ -11,9 +9,7 @@ const dialogflow = require('@google-cloud/dialogflow');
 async function getDelBotResponse(userMessage, sessionId, projectId = 'del-bot') {
     
     // Create new session
-    const sessionClient = new dialogflow.SessionsClient({
-        keyFileName: 'del-bot-creds.json'
-    });
+    const sessionClient = new dialogflow.SessionsClient();
     const sessionPath = sessionClient.projectAgentSessionPath(projectId, sessionId);
 
     // Query to the bot
