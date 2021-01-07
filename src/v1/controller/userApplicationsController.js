@@ -113,7 +113,8 @@ const getAllUserApplications = (userId, credentials, callback) => {
                                 addedOn: application.addedOn,
                                 applicationName: data[idx].applicationName,
                                 applicationUrl: data[idx].applicationUrl,
-                                applicationPermissions: data[idx].applicationPermissions
+                                applicationPermissions: data[idx].applicationPermissions,
+                                dataDescription: data[idx].dataDescription
                             };
 
                             applications.push(newApplication);
@@ -307,7 +308,8 @@ const updateUserApplication = (userId, payload, credentials, callback) => {
                                 addedOn: application.addedOn,
                                 applicationName: data[idx].applicationName,
                                 applicationUrl: data[idx].applicationUrl,
-                                applicationPermissions: data[idx].applicationPermissions
+                                applicationPermissions: data[idx].applicationPermissions,
+                                dataDescription: data[idx].dataDescription
                             };
 
                             applications.push(newApplication);
