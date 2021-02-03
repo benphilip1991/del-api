@@ -317,7 +317,7 @@ const loadApplication = {
     handler: (request, h) => {
         console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
         return h.file(Constants.APP_STORAGE.PATH + request.params.applicationId + '/' 
-            + request.params.applicationUrl + '.html');
+            + request.params.applicationUrl);
     }
 }
 
