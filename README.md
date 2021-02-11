@@ -10,6 +10,7 @@ _This service is still under development and features are constantly being added
 
 ## About
 The Digital Enhanced Living (DEL) api (del-api) service is the management module for the DEL platform and handles user profiles, application details and tracks linked services and user activities on the container application. The service will be expanded to add more features including health metric tracking and mHealth profiles for remote health management by caregivers.  
+The service has been configured with Swagger UI for quick visualisation and interaction with the service and is available at _hostname:port_  
 Other services contributing to the platform include [__del-auth__](https://github.com/benphilip1991/del-auth), [__del-web__](https://github.com/benphilip1991/del-web) and [__del-container__](https://github.com/benphilip1991/del-container). More details can be found on their respective pages.  
 _Please note that the repositories may be private at the moment and will be made public as they are developed._
 
