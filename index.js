@@ -38,7 +38,13 @@ const serverInit = async () => {
             name: config.CONSTANTS.SERVER.SERVICE_NAME
         },
         port: config.CONSTANTS.SERVER.PORT,
-        host: config.CONSTANTS.SERVER.HOST
+        host: config.CONSTANTS.SERVER.HOST,
+        routes: {
+            cors: {
+                origin: ['*'],
+                credentials: true
+            }
+        }
     });
 
     var listener = server.listener;
