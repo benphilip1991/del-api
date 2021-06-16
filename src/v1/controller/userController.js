@@ -113,18 +113,41 @@ const registerUser = (payload, credentials, callback) => {
                 })
             }
         },
-        task3_insertApplicationList: (asyncCallback) => {
+        task3_checkDevCredentials: (asyncCallback) => {
+            // Check if a developer account is being registered;
+            // If so, link emailId to devName in the developer record
+            if (Constants.USER_ROLES.DEVELOPER == payload.userRole) {
+                let devProfile = {
+                    devName: payload.emailId,
+                    deletable: true,
+                    deleted: false
+                }
+                Services.developerServices.updateSingleDeveloper({ devName: payload.emailId },
+                    devProfile, { upsert: false }, (err, data) => {
+                        if (err) {
+                            asyncCallback(err);
+                        } else {
+                            if (null == data) {
+                                console.log(`${Moment()} Creating user as a developer.`);
+                            }
+                            asyncCallback();
+                        }
+                    }
+                );
+            }
+        },
+        task4_insertApplicationList: (asyncCallback) => {
             // Application list only created for patient users
-            if(!userExists && payload.userRole == Constants.USER_ROLES.PATIENT) {
+            if (!userExists && payload.userRole == Constants.USER_ROLES.PATIENT) {
                 console.log(`Create application map for new user`)
                 Services.userApplicationServices.
-                createNewUserApplicationList(createdUser._id, (err, data) => {
-                    if(err) {
-                        asyncCallback(err);
-                    } else {
-                        asyncCallback();
-                    }
-                });
+                    createNewUserApplicationList(createdUser._id, (err, data) => {
+                        if (err) {
+                            asyncCallback(err);
+                        } else {
+                            asyncCallback();
+                        }
+                    });
             } else {
                 asyncCallback();
             }
@@ -158,6 +181,8 @@ const deleteSingleUser = (userId, credentials, callback) => {
         _id: userId,
         deleted: false
     };
+    var userRole;
+    var userEmail;
     const seriesTasks = {
         task1_checkUserExists: (asyncCallback) => {
             let projection = {
@@ -185,6 +210,8 @@ const deleteSingleUser = (userId, credentials, callback) => {
                                 && data.userRole != Constants.USER_ROLES.PATIENT) {
                                 asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
                             } else {
+                                userRole = data.userRole;
+                                userEmail = data.emailId;
                                 asyncCallback();
                             }
                         }
@@ -204,6 +231,22 @@ const deleteSingleUser = (userId, credentials, callback) => {
                     asyncCallback();
                 }
             })
+        },
+        task3_checkDevCredentials: (asyncCallback) => {
+            let updateData = {
+                deleted: true
+            }
+            if (userRole == Constants.USER_ROLES.DEVELOPER) {
+                Services.developerServices.updateSingleDeveloper({ devName: userEmail },
+                    updateData, { upsert: false }, (err, data) => {
+                        if (err) {
+                            asyncCallback(err)
+                        } else {
+                            asyncCallback();
+                        }
+                    }
+                );
+            }
         }
     }
 
