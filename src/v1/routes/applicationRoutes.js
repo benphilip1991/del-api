@@ -322,6 +322,29 @@ const loadApplication = {
 }
 
 /**
+ * Load an application web resource view
+ */
+const loadApplicationViews = {
+    method: 'GET',
+    path: '/api/v1/application/package/{applicationId}/views/{applicationUrl}',
+    config: {
+        description: 'Load an application resource - view html',
+        tags: ['api', 'application'],
+        validate: {
+            params: {
+                applicationId: Joi.string().required().trim().regex(/^[a-zA-Z0-9]+$/),
+                applicationUrl: Joi.string().required().trim()
+            }
+        },
+    },
+    handler: (request, h) => {
+        console.log('[INFO]', `${Moment()} --> ${request.method.toUpperCase()} ${request.path}`);
+        return h.file(Constants.APP_STORAGE.PATH + request.params.applicationId + '/views/' 
+            + request.params.applicationUrl);
+    }
+}
+
+/**
  * Load an application icon
  */
 const loadApplicationIcon = {
@@ -351,6 +374,7 @@ const applicationRoutes = [
     registerNewApplication,
     updateApplicationDetails,
     loadApplication,
+    loadApplicationViews,
     loadApplicationIcon
 ]
 
