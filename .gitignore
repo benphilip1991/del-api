@@ -3,4 +3,6 @@ package-lock.json
 .del-bot-creds.json
 .env
 applications
+.docker_del_db
+.docker_del_apps
 .DS_Store

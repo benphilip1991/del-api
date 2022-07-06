@@ -1,20 +1,22 @@
 version: "3"
 services:
-    app:
+    api:
         container_name: del-api
         image: del/del-api
         restart: always
+        volumes:
+            - ./.docker_del_apps:/app/applications
         environment: 
             - NODE_ENV=development
         command: bash -c "npm run docker_start_dev"
         ports:
-            - "3050:3050"
+            - "${PORT}:${PORT}"
         links:
             - mongo_del
     mongo_del:
         container_name: mongo_del
-        image: mongo
+        image: mongo:latest
         volumes:
-            - ./data:/data/del_api/db
+            - ./.docker_del_db:/data/db
         ports:
-            - "27019:27017"
+            - "27019:${DB_PORT}"
