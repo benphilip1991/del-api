@@ -246,6 +246,8 @@ const deleteSingleUser = (userId, credentials, callback) => {
                         }
                     }
                 );
+            } else {
+                asyncCallback();
             }
         }
     }
