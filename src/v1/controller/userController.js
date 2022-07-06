@@ -134,6 +134,8 @@ const registerUser = (payload, credentials, callback) => {
                         }
                     }
                 );
+            } else {
+                asyncCallback();
             }
         },
         task4_insertApplicationList: (asyncCallback) => {
