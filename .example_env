@@ -9,6 +9,7 @@ DB_USERNAME=del_dev
 DB_PASSWORD=verysecret
 DB_HOST=mongo_del
 DB_PORT=27017
+# Please change the host and port if not running on Docker
 
 # Example JWT Keys
 # Change the values before deploying
