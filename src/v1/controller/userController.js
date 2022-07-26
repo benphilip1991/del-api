@@ -378,9 +378,59 @@ const getAllUsers = (credentials, callback) => {
     })
 }
 
+/**
+ * Get all registered developers.
+ * Patients and caregivers do not have access to this API.
+ * 
+ * @param {object} credentials
+ * @param {function(err, data)} callback 
+ */
+const getAllDevelopers = (credentials, callback) => {
+    var devList = {};
+    const seriesTasks = {
+        task1_getAllDevelopers: (asyncCallback) => {
+            if (credentials.userRole == Constants.USER_ROLES.PATIENT ||
+                credentials.userRole == Constants.USER_ROLES.CAREGIVER) {
+                asyncCallback(Boom.forbidden(Constants.MESSAGES.ACTION_NOT_PERMITTED));
+            } else {
+                let query = {
+                    deleted: false
+                }
+                let projection = {
+                    __v: 0,
+                    deleted: 0,
+                    deletable: 0
+                };
+
+                Services.developerServices.getAllDevelopers(query, projection, {}, (err, data) => {
+                    if (err) {
+                        asyncCallback(err);
+                    } else {
+                        if (null != data && data.length != 0) {
+                            devList.users = data;
+                        }
+                        asyncCallback();
+                    }
+                });
+            }
+        }
+    }
+
+    // Fetch all users
+    async.series(seriesTasks, (err) => {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, devList);
+        }
+    })
+}
+
+
 module.exports = {
     registerUser: registerUser,
     deleteSingleUser: deleteSingleUser,
     getSingleUser: getSingleUser,
-    getAllUsers: getAllUsers
+    getAllUsers: getAllUsers,
+    getAllDevelopers: getAllDevelopers
 }

@@ -85,7 +85,10 @@ const getAllUsers = {
         validate: {
             headers: Joi.object({
                 authorization: Joi.string()
-            }).options({ allowUnknown: true })
+            }).options({ allowUnknown: true }),
+            query: Joi.object({
+                userType: Joi.string()
+            })
         },
         plugins: {
             'hapi-swagger': {
@@ -114,7 +117,12 @@ const getAllUsers = {
                     resolve(h.response(data).code(statusCode).header('Content-Type', 'application/json'));
                 }
             }
-            Controller.UserController.getAllUsers(request.auth.credentials, responseCallback);
+
+            if (request.query.userType && request.query.userType == "developer") {
+                Controller.UserController.getAllDevelopers(request.auth.credentials, responseCallback);
+            } else {
+                Controller.UserController.getAllUsers(request.auth.credentials, responseCallback);
+            }
         });
     }
 }
