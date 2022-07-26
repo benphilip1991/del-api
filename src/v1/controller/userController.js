@@ -123,7 +123,7 @@ const registerUser = (payload, credentials, callback) => {
                     deleted: false
                 }
                 Services.developerServices.updateSingleDeveloper({ devName: payload.emailId },
-                    devProfile, { upsert: false }, (err, data) => {
+                    devProfile, { upsert: true }, (err, data) => {
                         if (err) {
                             asyncCallback(err);
                         } else {
